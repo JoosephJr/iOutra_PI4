@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+
 @Entity
 @Table(name = "Usuario")
 public class Usuario {
@@ -25,7 +26,8 @@ private String cpf;
 @Email (message = "Formato de e-mail inválido!")
 private String email;
 
-private String grupo;
+@Enumerated(EnumType.STRING)
+private com.example.iOutra.model.Role grupo;
 
 private boolean isActive = true;
 
@@ -67,11 +69,11 @@ public void setEmail(String email) {
     this.email = email;
 }
 
-public String getGrupo() {
+public com.example.iOutra.model.Role getGrupo() {
     return grupo;
 }
 
-public void setGrupo(String grupo) {
+public void setGrupo(Role grupo) {
     this.grupo = grupo;
 }
 

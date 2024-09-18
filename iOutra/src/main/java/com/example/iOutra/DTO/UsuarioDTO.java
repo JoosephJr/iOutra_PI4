@@ -1,7 +1,7 @@
-package com.example.iOutra.model;
+package com.example.iOutra.DTO;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
+import org.springframework.context.annotation.Role;
 
 public class UsuarioDTO {
     
@@ -17,7 +17,7 @@ private String cpf;
 private String email;
 
 @NotEmpty(message = "O grupo é obrigatório!")
-private String grupo;
+public com.example.iOutra.model.Role grupo;
 
 @NotEmpty(message = "A senha é obrigatória!")
 @Size(min = 4, max = 20, message = "A senha deve conter entre 4 e 20 caracteres!")
@@ -47,11 +47,11 @@ public void setEmail(String email) {
     this.email = email;
 }
 
-public String getGrupo() {
+public com.example.iOutra.model.Role getGrupo() {
     return grupo;
 }
 
-public void setGrupo(String grupo) {
+public void setGrupo(com.example.iOutra.model.Role grupo) {
     this.grupo = grupo;
 }
 

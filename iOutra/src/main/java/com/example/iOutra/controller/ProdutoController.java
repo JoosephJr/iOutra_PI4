@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.iOutra.model.Produto;
-import com.example.iOutra.model.ProdutoDTO;
+import com.example.iOutra.DTO.ProdutoDTO;
 import com.example.iOutra.repository.ProdutoRepository;
 
 import jakarta.validation.Valid;

@@ -2,8 +2,11 @@ package com.example.iOutra.controller;
 
 import java.util.List;
 
+
+import com.example.iOutra.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,7 +14,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.iOutra.model.Usuario;
-import com.example.iOutra.model.UsuarioDTO;
+import com.example.iOutra.DTO.UsuarioDTO;
 import com.example.iOutra.repository.UsuarioRepository;
 
 import jakarta.validation.Valid;
@@ -22,6 +25,8 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioRepository userRepo;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping({ "", "/" })
     public String exibirListaUsuarios(Model model){
@@ -34,7 +39,7 @@ public class UsuarioController {
     public String exibirCadastrarUsuario(Model model){
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         model.addAttribute("usuarioDTO", usuarioDTO);
-        return "usuarios/cadastrarUsuario";
+        return "/cadastrarUsuario";
     }
     
     @PostMapping("/cadastrarUsuario")
@@ -55,7 +60,7 @@ public class UsuarioController {
         usuario.setEmail(usuarioDTO.getEmail());
         usuario.setCpf(usuarioDTO.getCpf());
         usuario.setGrupo(usuarioDTO.getGrupo());
-        usuario.setSenha(usuarioDTO.getSenha()); //verificar!!!
+        usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
 
         userRepo.save(usuario);
 
@@ -75,7 +80,7 @@ public class UsuarioController {
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setNome(usuario.getNome());
         usuarioDTO.setCpf(usuario.getCpf());
-        usuarioDTO.setGrupo(usuario.getGrupo());
+        usuarioDTO.setGrupo(Role.ROLE_USER);
         usuarioDTO.setSenha(usuario.getSenha());
 
         model.addAttribute("usuario", usuario);
