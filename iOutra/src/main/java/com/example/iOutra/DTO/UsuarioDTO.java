@@ -1,0 +1,67 @@
+package com.example.iOutra.DTO;
+
+import jakarta.validation.constraints.*;
+import org.springframework.context.annotation.Role;
+
+public class UsuarioDTO {
+    
+    @NotBlank (message = "O preenchimento do nome é obrigatório!")
+private String nome;
+
+@NotBlank (message = "O preenchimento do CPF é obrigatório!")
+@Size(min = 11, max = 11, message = "O CPF deve conter 11 dígitos.")
+private String cpf;
+
+@NotEmpty(message = "O preenchimento do email é obrigatório!")
+@Email (message = "Formato de e-mail inválido!")
+private String email;
+
+@NotEmpty(message = "O grupo é obrigatório!")
+public com.example.iOutra.model.Role grupo;
+
+@NotEmpty(message = "A senha é obrigatória!")
+@Size(min = 4, max = 20, message = "A senha deve conter entre 4 e 20 caracteres!")
+private String senha;
+
+public String getNome() {
+    return nome;
+}
+
+public void setNome(String nome) {
+    this.nome = nome;
+}
+
+public String getCpf() {
+    return cpf;
+}
+
+public void setCpf(String cpf) {
+    this.cpf = cpf;
+}
+
+public String getEmail() {
+    return email;
+}
+
+public void setEmail(String email) {
+    this.email = email;
+}
+
+public com.example.iOutra.model.Role getGrupo() {
+    return grupo;
+}
+
+public void setGrupo(com.example.iOutra.model.Role grupo) {
+    this.grupo = grupo;
+}
+
+public String getSenha() {
+    return senha;
+}
+
+public void setSenha(String senha) {
+    this.senha = senha;
+}
+
+
+}
