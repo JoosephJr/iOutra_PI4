@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+<h2>Login Page</h2>
+
+<form method="POST" action="/login">
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <div>
+        <button type="submit">Login</button>
+    </div>
+    <div>
+        <a class="btn btn-primary" href="/cadastrarUsuario">Cadastrar</a>
+    </div>
+
+
+</form>
+</body>
+</html>
