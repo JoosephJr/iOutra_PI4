@@ -5,6 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/iOutra/pom.xml" />
+        <option value="$PROJECT_DIR$/iOutra_PI4/iOutra/pom.xml" />
       </list>
     </option>
   </component>

@@ -2,142 +2,150 @@ package com.example.iOutra.controller;
 
 import java.util.List;
 
+import com.example.iOutra.controller.backoffice.Utils;
+import com.example.iOutra.services.ValidaCpf;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.iOutra.model.Usuario;
-import com.example.iOutra.model.UsuarioDTO;
 import com.example.iOutra.repository.UsuarioRepository;
 
 import jakarta.validation.Valid;
 
 @Controller
-@RequestMapping("/usuarios")
+@RequestMapping("backoffice")
 public class UsuarioController {
 
     @Autowired
-    private UsuarioRepository userRepo;
+    private PasswordEncoder passwordEncoder;
 
-    @GetMapping({ "", "/" })
-    public String exibirListaUsuarios(Model model) {
-        List<Usuario> usuarios = userRepo.findAll(Sort.by(Sort.Direction.DESC, "idUsuario"));
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private Utils utils;
+
+    @GetMapping("usuarios")
+    public String listarUsuarios(Model model, Authentication authentication) {
+
+        List <Usuario> usuariosList = usuarioRepository.findAll();
+
+        model.addAttribute("usuarios", usuariosList);
+        model.addAttribute("usuarioAutenticado" ,  utils.getUsuarioAutenticado(authentication) );
+
+        return "backoffice/usuario/lista-usuarios";
+    }
+
+    @GetMapping("procurar")
+    public String procurar (Model model, @RequestParam(name = "nome", required = false) String nome,
+                            Authentication authentication) {
+        List <Usuario> usuarios = usuarioRepository.findByNomeContainingIgnoreCase(nome);
+
         model.addAttribute("usuarios", usuarios);
-        return "usuarios/index";
+        model.addAttribute("usuariosAutenticado" , utils.getUsuarioAutenticado(authentication));
+        return "backoffice/usuario/lista-usuarios";
     }
 
-    @GetMapping("/cadastrarUsuario")
-    public String exibirCadastrarUsuario(Model model) {
-        UsuarioDTO usuarioDTO = new UsuarioDTO();
-        model.addAttribute("usuarioDTO", usuarioDTO);
-        return "usuarios/cadastrarUsuario";
+    @GetMapping("usuarios/cadastro")
+    public String cadastrar(Usuario usuario, Model model, Authentication authentication) {
+        model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
+        return "backoffice/usuario/form_usuario";
     }
 
-    @PostMapping("/cadastrarUsuario")
-    public String cadastrarUsuario(@Valid @ModelAttribute UsuarioDTO usuarioDTO,
-    BindingResult result){
-
-        if (userRepo.findByEmail(usuarioDTO.getEmail()) != null) {
-            result.addError(new FieldError("usuarioDTO", "email", usuarioDTO.getEmail(),
-            false, null, null, "Endereço de e-mail já está sendo utilizado!"));
-        }
-
-        if (result.hasErrors()) {
-            return "usuarios/cadastrarUsuario";
-        }
-
-        if (!usuarioDTO.getSenha().equals(usuarioDTO.getConfirmaSenha())) {
-            result.addError(new FieldError("usuarioDTO", "senha", "As senhas não são iguais!"));
-        }
-
-        if (result.hasErrors()) {
-            return "usuarios/cadastrarUsuario";
-        }
-
-
-        Usuario usuario = new Usuario();
-        usuario.setNome(usuarioDTO.getNome());
-        usuario.setEmail(usuarioDTO.getEmail());
-        usuario.setCpf(usuarioDTO.getCpf());
-        usuario.setGrupo(usuarioDTO.getGrupo());
-        usuario.setSenha(usuarioDTO.getSenha()); //verificar!!!
-        usuario.setConfirmaSenha(usuarioDTO.getConfirmaSenha());
-
-        if (!usuarioDTO.getSenha().equals(usuarioDTO.getConfirmaSenha())) {
-            result.addError(new FieldError("usuarioDTO", "senha", "As senhas não são iguais!"));
-        }
-
-        if (result.hasErrors()) {
-            return "usuarios/cadastrarUsuario";
-        }
-
-        userRepo.save(usuario);
-
-        return "redirect:/usuarios";
-    }
-
-    @GetMapping("/editarUsuario")
-    public String exibirEditarUsuario(Model model, @RequestParam int idUsuario) {
-        Usuario usuario = userRepo.findById(idUsuario).get();
-
-        if (usuario == null) {
-            return "redirect:/usuarios";
-        }
-
-        UsuarioDTO usuarioDTO = new UsuarioDTO();
-        usuarioDTO.setNome(usuario.getNome());
-        usuarioDTO.setEmail(usuario.getEmail());
-        usuarioDTO.setCpf(usuario.getCpf());
-        usuarioDTO.setGrupo(usuario.getGrupo());
-        usuarioDTO.setSenha(usuario.getSenha());
-
+    @GetMapping("usuarios/{id}")
+    public String handleBackOfficeGetUsuario(@PathVariable Long id, Model model, Authentication authentication) {
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow();
         model.addAttribute("usuario", usuario);
-        model.addAttribute("usuarioDTO", usuarioDTO);
+        model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
+        return "backoffice/usuario/form_usuario";
 
-        return "usuarios/editarUsuario";
     }
+    @PostMapping("usuario/cadastra")
+    public String salvaFormulario(@Valid Usuario usuario, BindingResult result, Authentication authentication, Model model) {
 
-    @PostMapping("/editarUsuario")
-    public String editarUsuario(Model model, @RequestParam int idUsuario,
-            @Valid @ModelAttribute UsuarioDTO usuarioDTO, BindingResult result) {
-
-        Usuario usuario = userRepo.findById(idUsuario).orElse(null);
-        if (usuario == null) {
-            return "redirect:/usuarios";
-        }
-
+        Usuario usuarioAutenticado = utils.getUsuarioAutenticado(authentication);
+        model.addAttribute("usuarioAutenticado", usuarioAutenticado);
         model.addAttribute("usuario", usuario);
 
+        // Valida o CPF
+        if (!ValidaCpf.isCPF(usuario.getCpf())) {
+            result.rejectValue("cpf", "error.cpf", "Cpf inválido");
+        }
+
+        // Validar senha vazia
+        if (usuario.getSenha().trim().isEmpty() || usuario.getSenha().length() < 4) {
+            result.rejectValue("password", "error.password", "Senha ter pelo menos 4 caracteres");
+        }
+
+        // Valida se já existe esse email ou cpf
+        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+            result.rejectValue("username", "error.username", "Email já cadastrado");
+        }
+
+        if (usuarioRepository.existsByCpf(usuario.getCpf())) {
+            result.rejectValue("cpf", "error.cpf", "Cpf já cadastrado");
+        }
+
         if (result.hasErrors()) {
-            return "usuarios/editarUsuario";
+            return "backoffice/usuario/form_usuario";
         }
 
-        usuario.setNome(usuarioDTO.getNome());
-        usuario.setCpf(usuarioDTO.getCpf());
-        usuario.setGrupo(usuarioDTO.getGrupo());
-        usuario.setSenha(usuarioDTO.getSenha());
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        usuarioRepository.save(usuario);
 
-        try {
-            userRepo.save(usuario);
+        return "redirect:/backoffice/usuarios";
+    }
 
-        } catch (Exception e) {
-            // talvez mexer aqui pra pegar exceção melhor
-            System.out.println(e);
+
+    @PostMapping("usuario/edita")
+    public String handleBackofficeEditar(@Valid Usuario usuario, BindingResult result, Authentication authentication, Model model) {
+
+        Usuario usuarioAutenticado = utils.getUsuarioAutenticado(authentication);
+        model.addAttribute("usuarioAutenticado", usuarioAutenticado);
+        model.addAttribute("usuario", usuario);
+
+        // Valida o CPF
+        if (!ValidaCpf.isCPF(usuario.getCpf())) {
+            result.rejectValue("cpf", "error.cpf", "Cpf inválido");
         }
 
-        return "redirect:/usuarios";
+        // Valida se há outra usuário já cadastrado com esse CPF a não ser ele próprio
+        if (usuarioRepository.existsByCpfAndIdNot(usuario.getCpf(), usuario.getId())) {
+            result.rejectValue("cpf", "error.cpf", "Cpf já cadastrado");
+        }
+
+        // Usuário logado não pode trocar o seu próprio grupo de acesso
+        if (usuario.getId().equals(usuarioAutenticado.getId()) &&
+                !usuarioAutenticado.getRole().equals(usuario.getRole())) {
+            result.rejectValue("role", "error.role", "Usuário não pode trocar o seu grupo");
+        }
+
+        if (result.hasErrors()) {
+            return "backoffice/usuario/form_usuario";
+        }
+
+        // Check if a new password is provided
+        if (usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
+            // If a new password is provided, encode and set it
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        } else {
+            // If no new password is provided, retain the existing password
+            Usuario existingUser = usuarioRepository.findById(usuario.getId()).orElse(null);
+            if (existingUser != null) {
+                usuario.setSenha(existingUser.getSenha());
+            }
+        }
+
+        usuarioRepository.save(usuario);
+
+        return "redirect:/backoffice/usuarios";
     }
 
-    @PostMapping("/alterarStatus")
-    public String alterarStatus(@RequestParam int id) {
-        Usuario usuario = userRepo.findById(id).orElseThrow();
-        usuario.setActive(!usuario.isActive());
-        userRepo.save(usuario);
-        return "redirect:/usuarios";
-    }
+
 
 }
