@@ -1,0 +1,113 @@
+<nav th:fragment="loja-header" class="navbar navbar-expand-lg bg-body-tertiary shadow-sm fixed-top p-0">
+  <div class="container-fluid d-flex justify-content-between align-items-center bg-dark">
+
+    <!-- Logo à esquerda -->
+    <div>
+      <a class="image-thumbnail" aria-current="page" href="/">
+        <img src="/img/logo.svg" style="width: 40px;" alt="">
+      </a>
+    </div>
+
+    <!-- Título no meio -->
+    <div class="col-md-6 text-start my-3">
+      <form>
+        <div class="input-group">
+          <input class="form-control" type="text" id="fullname" name="fullname" placeholder="Procurar Tapete">
+          <button class="btn btn-warning" type="button"><img src="/img/lupa.svg" width="30px" alt=""></button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Links à direita -->
+    <div id="login-section" class="d-flex">
+      <a href="#" class="text-light fs-5" id="login-link">Entrar</a>
+      <label for="" class="text-light fs-5">/</label>
+      <a href="" class="text-light fs-5" id="cadastrar-link">Cadastrar-se</a>
+
+    </div>
+    <label style="cursor: pointer;" class="text-light fs-5"><img class="mx-2" src="/img/cart.svg" width="40px">
+      Carrinho</label>
+
+  </div>
+
+  <script>
+    // Função para substituir o conteúdo pelo nome do usuário
+    function substituirPorNomeUsuario() {
+      var username = 'Arthur Silva'; // Substitua isso pela lógica real de obtenção do nome do usuário
+      localStorage.setItem('username', username);
+      document.getElementById('login-section').innerHTML =
+              '<span class="badge bg-secondary text-wrap fs-6 mx-2" style="width: 10rem;">' + "Bem-Vindo  " + "<label class='fs-5'>" + username + "</label>" + '</span>  <div class="d-flex align-items-end"><a class="badge btn btn-outline-warning fs-6 flex-fill" aria-current="page" href="#" id="sair-link">Sair</a></div>';
+      document.getElementById('sair-link').addEventListener('click', function(event) {
+        event.preventDefault(); // Evita que o link recarregue a página
+        localStorage.removeItem('username'); // Limpa o username do localStorage
+        document.getElementById('login-section').innerHTML =
+                '<a href="#" class="text-light fs-5" id="login-link">Entrar</a><label for="" class="text-light fs-5">/</label><a href="#" class="text-light fs-5" id="cadastrar-link">Cadastrar-se</a>';
+        document.getElementById('cadastrar-link').addEventListener('click', function(event) {
+          event.preventDefault(); // Evita que o link recarregue a página
+          substituirPorNomeUsuarioCadastro();
+        });
+        document.getElementById('login-link').addEventListener('click', function(event) {
+          event.preventDefault(); // Evita que o link recarregue a página
+          substituirPorNomeUsuario();
+        });
+      });
+    }
+
+    function substituirPorNomeUsuarioCadastro() {
+      var username = 'Kayke Ribeiro'; // Substitua isso pela lógica real de obtenção do nome do usuário
+      localStorage.setItem('username', username);
+      document.getElementById('login-section').innerHTML =
+              '<span class="badge bg-secondary text-wrap fs-6 mx-2" style="width: 10rem;">' + "Bem-Vindo  " + "<label class='fs-5'>" + username + "</label>" + '</span>  <div class="d-flex align-items-end"><a class="badge btn btn-outline-warning fs-6 flex-fill" aria-current="page" href="#" id="sair-link">Sair</a></div>';
+      document.getElementById('sair-link').addEventListener('click', function(event) {
+        event.preventDefault(); // Evita que o link recarregue a página
+        localStorage.removeItem('username'); // Limpa o username do localStorage
+        document.getElementById('login-section').innerHTML =
+                '<a href="#" class="text-light fs-5" id="login-link">Entrar</a><label for="" class="text-light fs-5">/</label><a href="#" class="text-light fs-5" id="cadastrar-link">Cadastrar-se</a>';
+        document.getElementById('cadastrar-link').addEventListener('click', function(event) {
+          event.preventDefault(); // Evita que o link recarregue a página
+          substituirPorNomeUsuarioCadastro();
+        });
+        document.getElementById('login-link').addEventListener('click', function(event) {
+          event.preventDefault(); // Evita que o link recarregue a página
+          substituirPorNomeUsuario();
+        });
+      });
+    }
+
+    // Adicionando evento de clique ao link "Entrar"
+    document.getElementById('cadastrar-link').addEventListener('click', function (event) {
+      event.preventDefault(); // Evita que o link recarregue a página
+      substituirPorNomeUsuarioCadastro();
+    });
+
+    // Adicionando evento de clique ao link "Cadastrar"
+    document.getElementById('login-link').addEventListener('click', function (event) {
+      event.preventDefault(); // Evita que o link recarregue a página
+      substituirPorNomeUsuario();
+    });
+
+    window.onload = function() {
+      var username = localStorage.getItem('username');
+      if (username) {
+        document.getElementById('login-section').innerHTML =
+                '<span class="badge bg-secondary text-wrap fs-6 mx-2" style="width: 10rem;">' + "Bem-Vindo  " + "<label class='fs-5'>" + username + "</label>" + '</span>  <div class="d-flex align-items-end"><a class="badge btn btn-outline-warning fs-6 flex-fill" aria-current="page" href="#" id="sair-link">Sair</a></div>';
+        document.getElementById('sair-link').addEventListener('click', function(event) {
+          event.preventDefault(); // Evita que o link recarregue a página
+          localStorage.removeItem('username'); // Limpa o username do localStorage
+          document.getElementById('login-section').innerHTML =
+                  '<a href="#" class="text-light fs-5" id="login-link">Entrar</a><label for="" class="text-light fs-5">/</label><a href="#" class="text-light fs-5" id="cadastrar-link">Cadastrar-se</a>';
+          document.getElementById('cadastrar-link').addEventListener('click', function(event) {
+            event.preventDefault(); // Evita que o link recarregue a página
+            substituirPorNomeUsuarioCadastro();
+          });
+          document.getElementById('login-link').addEventListener('click', function(event) {
+            event.preventDefault(); // Evita que o link recarregue a página
+            substituirPorNomeUsuario();
+          });
+        });
+      }
+    }
+  </script>
+
+
+</nav>
