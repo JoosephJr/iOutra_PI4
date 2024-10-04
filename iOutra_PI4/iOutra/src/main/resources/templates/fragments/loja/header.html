@@ -12,7 +12,7 @@
     <div class="col-md-6 text-start my-3">
       <form>
         <div class="input-group">
-          <input class="form-control" type="text" id="fullname" name="fullname" placeholder="Procurar Tapete">
+          <input class="form-control" type="text" id="fullname" name="fullname" placeholder="Procurar Artigo">
           <button class="btn btn-warning" type="button"><img src="/img/lupa.svg" width="30px" alt=""></button>
         </div>
       </form>
@@ -33,7 +33,7 @@
   <script>
     // Função para substituir o conteúdo pelo nome do usuário
     function substituirPorNomeUsuario() {
-      var username = 'Arthur Silva'; // Substitua isso pela lógica real de obtenção do nome do usuário
+      var username = 'Davi Brito'; // Substitua isso pela lógica real de obtenção do nome do usuário
       localStorage.setItem('username', username);
       document.getElementById('login-section').innerHTML =
               '<span class="badge bg-secondary text-wrap fs-6 mx-2" style="width: 10rem;">' + "Bem-Vindo  " + "<label class='fs-5'>" + username + "</label>" + '</span>  <div class="d-flex align-items-end"><a class="badge btn btn-outline-warning fs-6 flex-fill" aria-current="page" href="#" id="sair-link">Sair</a></div>';
@@ -54,7 +54,7 @@
     }
 
     function substituirPorNomeUsuarioCadastro() {
-      var username = 'Kayke Ribeiro'; // Substitua isso pela lógica real de obtenção do nome do usuário
+      var username = 'Raquel Brito'; // Substitua isso pela lógica real de obtenção do nome do usuário
       localStorage.setItem('username', username);
       document.getElementById('login-section').innerHTML =
               '<span class="badge bg-secondary text-wrap fs-6 mx-2" style="width: 10rem;">' + "Bem-Vindo  " + "<label class='fs-5'>" + username + "</label>" + '</span>  <div class="d-flex align-items-end"><a class="badge btn btn-outline-warning fs-6 flex-fill" aria-current="page" href="#" id="sair-link">Sair</a></div>';
