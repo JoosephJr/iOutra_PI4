@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <title>Carrinho</title>
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+
+</head>
+
+<body style="background-color: #F9F6F1;">
+
+<div th:replace="fragments/store/header.html :: loja-header"></div>
+
+<div class="container-fluid" style="margin-top: 100px;">
+    <div class="row justify-content-center" style="gap: 20px;"
+         th:if="${session.carrinho.itens != null and #lists.size(session.carrinho.itens) > 0}">
+        <div class="col-6 bg-light px-5 shadow rounded">
+            <h2 class="text-center mb-3 text-secondary">Itens do carrinho: </h2>
+            <div class="row border border-left rounded my-2 bg-light p-3"
+                 th:each="item : ${session.carrinho.itens}">
+                <img th:src="${'/img/produtos/' + item.imagem}" class="img-fluid" style="width: 200px;">
+                <div class="col">
+                    <label th:text="${item.produto.name}"></label>
+                    <label th:text="${item.produto.description}"></label>
+                </div>
+                <div class="col text-center">
+                    <label th:text="Quant."></label>
+
+                    <div class="col d-flex justify-content-center mt-4" style="gap: 10px;">
+
+                        <form th:action="@{/itemreduzir}" th:method="post">
+
+                            <div class="align-items-center">
+                                <input type="hidden" name="itemId" th:value="${item.produto.id}" readonly />
+                                <button class="btn btn-primary" type="submit" th:disabled="${item.quantidade < 2}">
+                                    < </button>
+                            </div>
+
+                        </form>
+
+                        <h3 th:text="${item.quantidade}"></h3>
+
+                        <form th:action="@{/item}" th:method="post">
+                            <input type="hidden" name="itemId" th:value="${item.produto.id}" readonly />
+                            <button class="btn btn-primary" type="submit"> > </button>
+                        </form>
+                    </div>
+                    <form th:action="@{/remover}" th:method="post">
+                        <input type="hidden" name="itemId" th:value="${item.produto.id}" readonly />
+                        <button type="submit" class="btn btn-danger btn-sm mt-3">Remover do carrinho</button>
+                    </form>
+                </div>
+
+                <div class="col">
+                    <div class="row">
+                        <label th:text="'Preço à vista no Pix'"></label>
+                        <label th:text="'R$ ' + ${item.quantidade * item.produto.price}"></label>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-3 align-self-center">
+            <div class="row">
+                <div class="container bg-light shadow rounded">
+                    <div class="container">
+                        <div class="text-center my-3">
+                            <h4 class="text-primary">Resumo</h4>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <label class="text-muted" for="" th:text="'Valor dos Produtos: '"></label>
+                            <label class="text-dark" for="" th:text="'R$ ' + ${session.carrinho.total}"></label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <label class="text-muted" for="" th:text="'Valor do Frete:'"></label>
+                            <label class="text-dark" id="freteValue" for="" th:text="'R$ 0'"></label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <label class="text-muted" for="" th:text="'Total a prazo: '"></label>
+                            <label class="text-dark" id="totalAPrazo" for=""
+                                   th:text="'R$ ' + ${session.carrinho.total}"></label>
+                        </div>
+
+                        <div class="text-end">
+                            <label class="text-muted" th:if="${session.carrinho.total != null}"
+                                   th:text="'(em até 10x de R$ ' + ${session.carrinho.total / 10} + ' sem juros)'"></label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <label class="text-muted" for="" th:text="'Total à vista no Pix: '"></label>
+                            <label class="text-dark" id="totalAVista" for=""
+                                   th:text="'R$ ' + ${#numbers.formatDecimal(session.carrinho.total * 0.95, 0, 'COMMA', 2, 'POINT')}"></label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="container bg-light shadow rounded">
+                    <div class="container mb-3">
+                        <div class="mb-3" th:if="${session.client == null}">
+                            <h4 for="" class="text-center text-primary">Entrega</h4>
+
+                            <input type="text" id="cepNaoLogado" placeholder="CEP *"
+                                   onkeyup="validarCEP(this.value)">
+
+                            <br>
+                            <a target="_blank"
+                               href="https://buscacepinter.correios.com.br/app/endereco/index.php">Não lembro meu
+                                CEP</a>
+
+                        </div>
+
+                        <div class="container mt-3" id="fretesnaologado" style="display: none;">
+                            <div class="row my-3">
+                                <div class="col-md-12">
+                                    <div class="list-group">
+                                        <!-- Frete Expresso -->
+                                        <div class="list-group-item">
+                                            <input type="radio" value="15.00" name="freteradio">
+                                            <label>Frete Expresso</label>
+                                            <span class="badge badge-primary badge-pill ml-2">
+                                                    <label class="text-success">R$ 15,73</label>
+                                                </span>
+                                            <span>Chegará em 2 dias</span>
+                                        </div>
+                                        <!-- Frete Padrão -->
+                                        <div class="list-group-item">
+                                            <input type="radio" value="10.00" name="freteradio">
+                                            <label>Frete Padrão</label>
+                                            <span class="badge badge-primary badge-pill ml-2">
+                                                    <label class="text-success">R$ 10,15</label>
+                                                </span>
+                                            <span>Chegará em 4 dias</span>
+                                        </div>
+                                        <!-- Frete Econômico -->
+                                        <div class="list-group-item">
+                                            <input type="radio" value="5.00" name="freteradio">
+                                            <label>Frete Econômico</label>
+                                            <span class="badge badge-primary badge-pill ml-2">
+                                                    <label class="text-success">R$ 5,53</label>
+                                                </span>
+                                            <span>Chegará em 7 dias</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- INFORMAÇÕES DA ENTREGA -->
+                    <div class="div" th:unless="${session.client == null}">
+
+                        <div class="text-center mb-3">
+                            <h4 for="" class="my-3 text-primary">Entrega</h4>
+                        </div>
+                        <label for="" id="enderecoPrincipal"
+                               th:text="${session.entrega.street} + ', ' + ${session.entrega.number} +' / ' + ${session.entrega.state}"></label>
+                        <label for="" id="cepPrincipal" th:text="${session.entrega.zipCode}"></label>
+
+                        <div class="container mt-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <form action="/pagamento" method="post">
+                                        <div class="list-group">
+                                            <div th:each="frete : ${session.frete}" class="list-group-item">
+                                                <input type="radio" th:value="${frete.id}" name="freteradio">
+                                                <label th:text="${frete.tipoEntrega}" class="ml-2"></label>
+                                                <span class="badge badge-primary badge-pill ml-2">
+                                                        <label class="text-success"
+                                                               th:text="'R$ ' + ${#numbers.formatDecimal(frete.valor,  0, 'COMMA', 2, 'POINT')}"></label>
+                                                    </span>
+                                                <span th:text="'Chegará em ' + ${frete.dias} + ' dias'" class="ml-2"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center my-3">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#enderecoModal">
+                                                Selecionar outro endereço
+                                            </button>
+                                        </div>
+
+                                        <div class="row bg-light mt-3 p-4 shadow rounded">
+                                            <div class="col">
+                                                <div class="row mb-3">
+                                                    <button type="submit" class="btn btn-secondary">IR PARA PAGAMENTO</button>
+                                                </div>
+                                                <div class="row">
+                                                    <a class="btn btn-warning" href="/">CONTINUAR COMPRANDO</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="enderecoModal" tabindex="-1"
+                             aria-labelledby="enderecoModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="enderecoModalLabel">Escolha um endereço</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="enderecoForm">
+                                            <!-- Loop through delivery addresses -->
+                                            <th:block th:each="endereco : ${session.client.deliveryAddresses}">
+                                                <div class="mb-3 endereco-item">
+                                                    <!-- Opção de seleção de rádio -->
+                                                    <input type="radio" name="endereco" th:value="${endereco.id}" />
+                                                    <!-- Rua -->
+                                                    <label class="form-label endereco"
+                                                           th:text="${endereco.street}"></label>
+                                                    <!-- Número -->
+                                                    <label class="form-label numero"
+                                                           th:text="${endereco.number}"></label>
+                                                    <!-- CEP -->
+                                                    <label class="form-label cep"
+                                                           th:text="${endereco.zipCode}"></label>
+                                                    <!-- Complemento -->
+                                                    <label class="form-label complemento"
+                                                           th:text="${endereco.complement}"></label>
+                                                </div>
+                                            </th:block>
+                                        </form>
+                                        <div id="camposEnderecoExtra" style="display: none;">
+                                            <!-- Modelo para campos de endereço extra -->
+                                            <div class="mb-3 endereco-item">
+                                                <form action="/cadastro/addEndereco" th:method="post">
+                                                    <input type="number" class="form-control" placeholder="CEP"
+                                                           id="novoCEP" name="novoCEP"
+                                                           oninput="verificarCEP(this.value)">
+                                                    <input type="text" class="form-control" placeholder="Logradouro"
+                                                           id="novoLogradouro" name="novoLogradouro" required>
+                                                    <input type="text" class="form-control" placeholder="Número"
+                                                           id="novoNumero" name="novoNumero" required>
+                                                    <input type="text" class="form-control"
+                                                           placeholder="Complemento" id="novoComplemento"
+                                                           name="novoComplemento">
+                                                    <input type="text" class="form-control" placeholder="Bairro"
+                                                           id="novoBairro" name="novoBairro">
+                                                    <input type="text" class="form-control" placeholder="Cidade"
+                                                           id="novoCidade" name="novoCidade">
+                                                    <input type="text" class="form-control" placeholder="UF"
+                                                           id="novoUF" name="novoUF">
+                                                    <button class="btn btn-success">Salvar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-info" onclick="adicionarCampoEndereco()">Adicionar
+                                            outro endereço</button>
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Fechar</button>
+                                        <button type="button" class="btn btn-primary"
+                                                onclick="selecionarEndereco()">Selecionar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container text-center"
+         th:unless="${session.carrinho.itens != null and #lists.size(session.carrinho.itens) > 0}">
+        <div class="col-lg">
+            <h3 class="mt-3">O seu carrinho está vazio.</h3>
+            <h5 class="mt-3">Deseja olhar outros produtos similares?</h5>
+            <a class="btn btn-warning my-5" href="/">CONTINUAR COMPRANDO</a>
+        </div>
+    </div>
+</div>
+
+<footer class="bg-light py-4" style="position: relative; bottom: 0; width: 80%; margin-top: 300px;">
+    <div class="container text-center">
+        <p class="mb-0">© 2024 Harmony. Todos os direitos reservados. <br> Desenvolvido por Bravos do TI.
+        </p>
+
+    </div>
+</footer>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Get all radio buttons with name "freteradio"
+    var radioButtons = document.querySelectorAll('input[name="freteradio"]');
+
+    // Add change event listener to each radio button
+    radioButtons.forEach(function (radioButton) {
+        radioButton.addEventListener('change', function () {
+            // Get the selected value
+            var selectedValue = parseFloat(this.value);
+
+            // Update the label with the selected freight value
+            document.getElementById("freteValue").innerText = 'R$ ' + selectedValue.toFixed(2);
+
+            // Get the total value of products
+            var totalProduto = parseFloat([[${ session.carrinho.total }]]);
+
+            // Calculate the new total values based on the selected freight value
+            var totalAPrazo = totalProduto + selectedValue;
+            var totalAVista = (totalProduto + selectedValue) * 0.95;
+
+            // Update the labels with the calculated values
+            document.getElementById("totalAPrazo").innerText = 'R$ ' + totalAPrazo.toFixed(2);
+            document.getElementById("totalAVista").innerText = 'R$ ' + totalAVista.toFixed(2);
+        });
+    });
+    /*]]>*/
+
+    function selecionarEndereco() {
+
+        var enderecoSelecionado = document.querySelector('input[name="endereco"]:checked');
+        if (enderecoSelecionado) {
+            var endereco = enderecoSelecionado.closest('.endereco-item');
+
+            // Atualize as informações de endereço na página principal
+            document.getElementById("enderecoPrincipal").innerText = endereco.querySelector('.endereco').innerText + ", " + endereco.querySelector('.numero').innerText + " / ";
+            document.getElementById("cepPrincipal").innerText = endereco.querySelector('.cep').innerText;
+            // Feche o modal
+            var myModalEl = document.getElementById('enderecoModal');
+            var modal = bootstrap.Modal.getInstance(myModalEl);
+            modal.hide();
+
+        } else {
+            alert("Por favor, selecione um endereço.");
+        }
+    }
+
+    function adicionarCampoEndereco() {
+        var camposEnderecoExtra = document.getElementById('camposEnderecoExtra');
+        var novoCampoEndereco = camposEnderecoExtra.querySelector('.endereco-item').cloneNode(true);
+        camposEnderecoExtra.style.display = 'block'; // Mostrar os campos de endereço extra
+    }
+
+    function preencherEnderecoViaCEP() {
+
+        // Obtém o valor do campo de CEP
+        const cepValue = document.getElementById('novoCEP').value;
+
+        // Faz a requisição para o ViaCEP
+        fetch(`https://viacep.com.br/ws/${cepValue}/json/`)
+            .then(response => {
+
+                // Verifica se a resposta da requisição foi bem-sucedida
+                if (!response.ok) {
+                    throw new Error('CEP não encontrado.');
+                }
+
+                // Converte a resposta para JSON
+                return response.json();
+            })
+            .then(data => {
+
+                // Preenche os campos do endereço com os dados retornados
+                document.getElementById('novoLogradouro').value = data.logradouro;
+                document.getElementById('novoComplemento').value = data.complemento;
+                document.getElementById('novoBairro').value = data.bairro;
+                document.getElementById('novoCidade').value = data.localidade;
+                document.getElementById('novoUF').value = data.uf;
+            })
+            .catch(error => {
+                // Se houver algum erro na requisição, exibe uma mensagem de erro
+
+                console.error('Erro ao obter detalhes do endereço:', error.message);
+            });
+    }
+
+    function verificarCEP(cep) {
+        // Verifica se o CEP possui 8 dígitos
+        if (cep.length === 8) {
+
+            preencherEnderecoViaCEP();
+        }
+    }
+
+    function validarCEP(cep) {
+
+        if (cep.length === 9) {
+
+            document.getElementById("fretesnaologado").style.display = "block";
+        }
+    }
+
+
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+</body>
+
+</html>

@@ -1,10 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+
+    <title>Detalhes Produto</title>
+    <style>
+        #carouselControls img {
+            height: 600px;
+        }
+    </style>
 </head>
+
 <body>
-$END$
+
+<div th:replace="fragments/loja/header.html :: loja-header"></div>
+
+<div class="container mt-5 py-5">
+    <div class="row">
+        <!-- Imagens do produto -->
+        <div class="col-sm-1 align-self-center"> <!-- Tamanho ajustado para menor -->
+            <div class="mt-3">
+                <div id="thumbnailContainer" class="d-flex flex-column">
+                    <th:block th:each="imagem, iterStat : ${produto.imagens}">
+                        <img th:src="${'/img/produtos/' + imagem.nomeArquivo}" alt="Slide"
+                             data-bs-target="#carouselControls" th:data-bs-slide-to="${iterStat.index}"
+                             th:class="${imagem.principal} ? 'active' : ''"
+                             style="width: 100px; height: auto; margin-right: 10px; margin-bottom: 10px; border: 0.5px solid rgb(220, 220, 220); border-radius: 2px; ">
+                    </th:block>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carousel Imagens -->
+        <div class="col-md-8 justify-content-center p-5"> <!-- Tamanho ajustado para maior -->
+            <div id="carouselControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <th:block th:each="imagem, iterStat : ${produto.imagens}">
+                        <div th:class="${imagem.principal} ? 'carousel-item active' : 'carousel-item'">
+                            <img th:src="${'/img/produtos/' + imagem.nomeArquivo}" class="d-block w-100 img-fluid"
+                                 alt="Imagem do Produto">
+                        </div>
+                    </th:block>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselControls"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselControls"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Próximo</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Detalhes do produto -->
+        <div class="col-md-3 align-self-center">
+            <div class="shadow-sm border rounded bg-light p-4">
+                <h2 class="mb-4" th:text="${produto.name}"></h2>
+
+                <p class="mb-3">
+                        <span th:each="i : ${#numbers.sequence(1, produto.rating)}">
+                            <img src="/img/star.svg" alt="Estrela" width="20px">
+                        </span>
+                    <span th:if="${produto.rating % 1 != 0}">
+                            <img src="/img/half-star.png" alt="Meia estrela" width="20px">
+                        </span>
+                </p>
+
+                <div class="d-flex">
+                    <label class="mt-1">R$ </label>
+                    <p class="fs-4 fw-bold mb-3" th:text="${produto.price}"></p>
+                </div>
+
+                <div class="input-group" style="width: 250px;">
+                    <label for="quantidade" class="input-group-text">Quantidade</label>
+                    <select class="form-select" id="quantidade" name="quantidade" required>
+                        <option th:each="i : ${#numbers.sequence(1, produto.stockQuantity)}" th:value="${i}"
+                                th:text="${i}"></option>
+                    </select>
+                </div>
+
+                <div class="text-end mt-3">
+                    <button class="btn btn-success" id="comprarBtn" disabled>Comprar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+
+    <!-- Descrição do produto -->
+    <div class="mt-3">
+        <div class="rounded">
+            <h3 class="mb-3">Descrição do produto:</h3>
+            <p class="fs-5" th:text="${produto.description}"></p>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/fooster.html :: adm-fooster"></div>
+
 </body>
+
+
+<script>
+    $('#carouselExampleControls').carousel({
+        interval: false
+    });
+</script>
+
+
 </html>
