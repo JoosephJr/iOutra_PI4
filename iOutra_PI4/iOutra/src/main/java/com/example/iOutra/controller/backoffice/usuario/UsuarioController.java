@@ -1,9 +1,9 @@
-package com.example.iOutra.controller;
+package com.example.iOutra.controller.backoffice.usuario;
 
 import java.util.List;
 
+import com.example.iOutra.controller.ValidaCpf;
 import com.example.iOutra.controller.backoffice.Utils;
-import com.example.iOutra.services.ValidaCpf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;

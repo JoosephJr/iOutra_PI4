@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmony - backoffice usuários</title>
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body>
+
+    <div th:replace="fragments/header.html :: adm-header"></div>
+
+    <div class="container-fluid" style="margin-top: 70px;">
+
+        <div class="row vh-100" style="gap: 10px;">
+
+            <div th:replace="fragments/navside.html :: adm-nav('produto')"></div>
+
+            <main class="col-md shadow-lg text-center">
+
+                <div class="container text-center">
+
+                    <div class="row my-3">
+                        <div class="col-md-6 text-start">
+                            <form th:action="@{/backoffice/buscar}" th:method="get">
+                                <div class="input-group">
+                                    <input class="form-control" type="text" id="name" name="name"
+                                        placeholder="Procurar Nome">
+                                    <button class="btn btn-primary" type="submit">Buscar</button>
+
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="col-md-6 text-end" th:if="${usuarioAutenticado?.role != 'Estoquista'}">
+                            <button class="btn btn-success"
+                                onclick="location.href='/backoffice/produtos/cadastro'">+</button>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nome</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço</th>
+                                    <th>Status</th>
+                                    <th>Editar</th>
+                                    <th th:if="${usuarioAutenticado?.role != 'Estoquista'}">Inativar/Reativar</th>
+                                    <th th:if="${usuarioAutenticado?.role != 'Estoquista'}">Visualizar</th>
+                                </tr>
+                            </thead>
+                            <tbody th:each="produto : ${produtos}">
+                                <!-- Adicione linhas para cada usuário -->
+                                <tr>
+                                    <td th:text="${produto.id}"></td>
+                                    <td th:text="${produto.name}"></td>
+                                    <td th:text="${produto.stockQuantity}"></td>
+                                    <td th:text="${produto.price}"></td>
+                                    <td th:text="${produto.isActive ? 'Ativo' : 'Inativo'}"></td>
+                                    <td>
+                                        <a class="btn btn-primary"
+                                            th:href="@{/backoffice/produtos/{id}(id=${produto.id})}">
+                                            Editar
+                                        </a>
+                                    </td>
+                                    <span th:if="${usuarioAutenticado?.role != 'Estoquista'}">
+                                        <td>
+
+                                            <form th:if="${produto.isActive}"
+                                                th:action="@{/backoffice/produtos/{id}/inativar(id=${produto.id})}"
+                                                onsubmit="return confirma()">
+
+                                                <button class="btn btn-danger">Inativar</button>
+                                            </form>
+
+                                            <form th:unless="${produto.isActive}"
+                                                th:action="@{/backoffice/produtos/{id}/reativar(id=${produto.id})}"
+                                                onsubmit="return confirma()">
+
+                                                <button class="btn btn-success">Reativar</button>
+                                            </form>
+                                        </td>
+                                    </span>
+                                    <span th:if="${usuarioAutenticado?.role != 'Estoquista'}">
+                                        <td>
+                                            <a class="btn btn-info" th:href="@{/backoffice/produto(id=${produto.getId})}">Visualizar</a>
+                                        </td>
+                                    </span>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <nav class="container" aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/backoffice/produtos(page=0)}">
+
+                                <span aria-hidden="true">&laquo;</span>
+
+                            </a>
+                        </li>
+                        <li th:each="pageNo : ${#numbers.sequence(0, totalPages-1)}"
+                            th:classappend="${pageNo == currentPage ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/backoffice/produtos(page=${pageNo})}"
+                                th:text="${pageNo + 1}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage == totalPages-1 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/backoffice/produtos(page=${totalPages-1})}">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+            </main>
+        </div>
+
+    </div>
+
+    <div th:replace="fragments/fooster.html :: adm-fooster"></div>
+
+</body>
+
+
+<script>
+    function confirma() {
+        return confirm("Deseja confirmar a ação?");
+    }
+</script>
+
+</html>

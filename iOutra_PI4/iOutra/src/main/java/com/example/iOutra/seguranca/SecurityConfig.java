@@ -27,11 +27,20 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
+
                     //Livre acesso
-                    registry.requestMatchers("/index", "/login").permitAll();
+                    registry.requestMatchers("/resumo", "/resumo/**", "/pagamento", "/pagamento/**","/addEndereco",
+                            "/setup", "/img/**", "/css/**", "/css", "/backoffice/setup", "/", "/produto", "/login",
+                            "/cadastro", "/cadastro/**","/sair", "/carrinho", "/item", "/item/**", "/itemreduzir", "/remover",
+                            "/pedidos", "/pedidos/**", "/comprar").permitAll();
+
                     //Administrador e estoquista
-                    registry.requestMatchers("/backoffice/**").hasAnyRole("Administrador", "Estoquista");
+                    registry.requestMatchers("/backoffice/", "/backoffice/pedidos",
+                            "/backoffice/pedidos/**").hasAnyRole("Administrador", "Estoquista");
+
+                    // estoquista nao acessa backoffice-listar produtos
                     registry.requestMatchers("/backoffice/usuarios").hasRole("Administrador");
+
                     registry.anyRequest().authenticated();
 
                 })

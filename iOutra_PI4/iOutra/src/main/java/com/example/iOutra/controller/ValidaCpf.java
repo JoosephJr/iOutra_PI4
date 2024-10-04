@@ -1,4 +1,4 @@
-package com.example.iOutra.services;
+package com.example.iOutra.controller;
 
 import java.util.InputMismatchException;
 

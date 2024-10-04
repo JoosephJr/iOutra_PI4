@@ -22,7 +22,7 @@ public class BackofficeController {
     @Autowired
     private Utils utils;
 
-    @GetMapping("cadastro")
+    @GetMapping("cadastrarUsuario")
     public String cadastrarUsuario(){
 
         boolean userExists = repository.existsByEmail("admin@root.com");

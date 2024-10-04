@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+
+    <title>Detalhes Produto</title>
+    <style>
+        #carouselControls img {
+            height: 600px;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <div th:replace="fragments/header.html :: adm-header"></div>
+
+
+    <div class="container-sm mt-5 py-5">
+        <div class="container p-2">
+            <div class="row justify-content-center">
+                <div class="col-sm-6 align-self-center">
+                    <div id="carouselControls" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <th:block th:each="imagem, iterStat : ${produto.imagens}">
+                                <div th:class="${imagem.principal} ? 'carousel-item active' : 'carousel-item'">
+                                    <img th:src="${'/img/produtos/' + imagem.nomeArquivo}" class="d-block w-100"
+                                        alt="Imagem" style="max-height: 400px; max-width: 600px;">
+                                </div>
+                            </th:block>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselControls"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselControls"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Próximo</span>
+                        </button>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <div id="thumbnailContainer" class="d-flex flex-wrap">
+                            <th:block th:each="imagem, iterStat : ${produto.imagens}">
+                                <img th:src="${'/img/produtos/' + imagem.nomeArquivo}" alt="Slide"
+                                    data-bs-target="#carouselControls" th:data-bs-slide-to="${iterStat.index}"
+                                    th:class="${imagem.principal} ? 'active' : ''"
+                                    style="width: 100px; height: auto; margin-right: 10px; margin-bottom: 10px;">
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 align-self-start">
+                    <div class="shadow-lg border rounded bg-light p-3">
+                        <h2 th:text="${produto.name}"></h2>
+                        <p th:text="${'Avaliação: ' + produto.rating}"></p>
+                        <p th:text="${'R$ ' + produto.price}"></p>
+                        <div class="mb-3">
+                            <label for="quantidade" class="form-label">Quantidade</label>
+                            <input type="number" class="form-control" id="quantidade" name="quantidade" min="1"
+                                required>
+                        </div>
+                        <p th:text="${'Descrição: ' + produto.description}"></p>
+                        <div class="text-end">
+                            <button class="btn btn-success" id="comprarBtn" disabled>Comprar</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row p-2 justify-content-end">
+            <div class="col-md-4 p-1 m-1 text-end">
+                <a type="button" class="btn btn-secondary" href="/backoffice/produtos">Voltar</a>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div th:replace="fragments/fooster.html :: adm-fooster"></div>
+
+</body>
+
+<script>
+    $('#carouselExampleControls').carousel({
+        interval: false
+    });
+</script>
+
+
+</html>

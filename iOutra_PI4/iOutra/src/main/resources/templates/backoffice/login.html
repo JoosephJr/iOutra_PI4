@@ -1,11 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-teste login
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/login.css">
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <title>Harmony - backoffice login</title>
 
+</head>
+
+<body>
+    <div class="box-form">
+        <div class="left">
+            <div class="overlay">
+                <h1>Harmony <br>For <br> Good life</h1>
+                <p>Desenvolvido por: Arthur, Cintia, Juan e Kayke - para transformar desafios em conquistas digitais.
+                    Elevamos sua experiência tecnológica com coragem e excelência. <br>©️ Bravos da TI - 4º Semestre ADS
+                    Senac</p>
+            </div>
+        </div>
+
+        <div class="right">
+            <h5>Backoffice</h5>
+            <p>Não tem uma conta? <br>Entre em contato com um administrador</p>
+            <div class="inputs">
+                <form th:action="@{/backoffice}" th:method="post" th:object="${usuario}">
+                    <input type="text" placeholder="Digite seu E-mail" th:field="*{email}" required>
+                    <br>
+                    <input type="password" placeholder="Digite sua senha" th:field="*{password}">
+            </div>
+
+            <button type="submit">Login</button>
+            </form>
+            <div th:if="${mensagem}" class="alert alert-danger" role="alert">
+                <p th:text="${mensagem}"></p>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

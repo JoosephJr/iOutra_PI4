@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmony - backoffice pedidos</title>
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body>
+
+    <div th:replace="fragments/header.html :: adm-header"></div>
+
+    <div class="container-fluid" style="margin-top: 70px;">
+
+        <div class="row vh-100" style="gap: 10px;">
+
+            <div th:replace="fragments/navside.html :: adm-nav('pedido')"></div>
+
+            <main class="col-md shadow-lg text-center">
+
+                <div class="container text-center">
+
+                    <div class="row my-3">
+                        <div class="col-md-6 text-start">
+                            <form th:action="@{/backoffice/buscar}" th:method="get">
+                                <div class="input-group">
+                                    <input class="form-control" type="text" id="name" name="name"
+                                        placeholder="Procurar Nome">
+                                    <button class="btn btn-primary" type="submit">Buscar</button>
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="col-md-6 text-end" th:if="${usuarioAutenticado?.role != 'Estoquista'}">
+                            <button class="btn btn-success"
+                                onclick="location.href='/backoffice/produtos/cadastro'">+</button>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data do pedido</th>
+                                    <th>Número</th>
+                                    <th>Id Cliente</th>
+                                    <th>Valor total</th>
+                                    <th>Status</th>
+                                    <th>Editar</th>
+                                </tr>
+                            </thead>
+                            <tbody th:each="pedido : ${pedidos}">
+                                <!-- Adicione linhas para cada usuário -->
+                                <tr>
+                                    <td th:text="${pedido.dataPedido}"></td>
+                                    <td th:text="${pedido.serial}"></td>
+                                    <td th:text="${pedido.cliente.id}"></td>
+                                    <td th:text="'R$ ' + ${pedido.total}"></td>
+                                    <td th:text="${pedido.status}" th:classappend="${pedido.status == 'Entregue' ? 'text-success' : (pedido.status == 'Pagamento rejeitado' ? 'text-danger' : 'text-warning')}"></td>
+                                    <td>
+                                        <!-- Botão para abrir o modal -->
+                                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#editModal" th:attr="data-pedido-id=${pedido.id}">
+                                            Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Editar Status do Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/backoffice/pedidos/editarStatus}" th:method="post">
+                        <!-- Aqui você pode adicionar um select com as opções de status -->
+                        <select class="form-select" name="status">
+                            <option value="Aguardando pagamento">Aguardando pagamento</option>
+                            <option value="Pagamento rejeitado">Pagamento rejeitado</option>
+                            <option value="Pagamento com sucesso">Pagamento com sucesso</option>
+                            <option value="Aguardando retirada">Aguardando retirada</option>
+                            <option value="Em trânsito">Em trânsito</option>
+                            <option value="Entregue">Entregue</option>
+                        </select>
+                        <!-- Adicione um input hidden para enviar o ID do pedido -->
+                        <input type="hidden" id="pedidoId" name="pedidoId">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/fooster.html :: adm-fooster"></div>
+
+</body>
+
+<script>
+    // Script para capturar o ID do pedido quando o modal é aberto
+    var editModal = document.getElementById('editModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+        // Botão que acionou o modal
+        var button = event.relatedTarget;
+        // Extrai o ID do pedido do atributo data-pedido-id
+        var pedidoId = button.getAttribute('data-pedido-id');
+        // Atualiza o valor do input hidden no formulário do modal
+        var modalInput = editModal.querySelector('#pedidoId');
+        modalInput.value = pedidoId;
+    });
+</script>
+
+</html>

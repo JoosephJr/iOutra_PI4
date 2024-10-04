@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmony - backoffice usuario form</title>
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body>
+    <div th:insert="fragments/header.html :: adm-header"></div>
+
+    <div class="container-fluid" style="margin-top: 70px;">
+        <div class="row" style="gap: 10px;">
+            <div th:replace="fragments/navside.html :: adm-nav('produto')"></div>
+
+            <main class="col-md shadow-lg">
+                <div class="container vh-100" style="max-width: 900px; margin-left: auto; margin-right: auto;">
+                    <form
+                        th:action="${produto.id != null} ? @{/backoffice/produto/edita} : @{/backoffice/produto/cadastra}"
+                        th:method="post" th:object="${produto}" class="needs-validation" enctype="multipart/form-data">
+
+                        <h3 class="h3 my-3">Formulário - Produto</h3>
+
+                        <!-- ID -->
+                        <div th:if="${produto.id != null}">
+                            <input type="hidden" th:field="*{id}" readonly>
+                        </div>
+
+                        <!-- Nome do produto -->
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome:</label>
+                            <input type="text" th:field="*{name}" minlength="3" maxlength="200" class="form-control"
+                                th:readonly="${usuarioAutenticado.role!='Administrador'}">
+                            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <!-- Preço -->
+                            <div class="col-md mb-3">
+                                <label for="preco" class="form-label">Preço:</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-warning">R$</span>
+                                    <input type="number" th:field="*{price}" class="form-control"
+                                        th:readonly="${usuarioAutenticado.role!='Administrador'}">
+                                </div>
+                                <span th:errors="*{price}" class="text-danger"></span>
+                            </div>
+
+                            <!-- Quantidade -->
+                            <div class="col-md mb-3">
+                                <label for="quantidade" class="form-label">Quantidade em estoque:</label>
+                                <input type="number" min="0" th:field="*{stockQuantity}" class="form-control">
+                                <span th:errors="*{stockQuantity}" class="text-danger"></span>
+                            </div>
+
+                            <!-- Avaliação -->
+                            <div class="col-md mb-3">
+                                <label for="avaliacao" class="form-label">Avaliação:</label>
+                                <select id="ratingSelect" th:field="*{rating}" class="form-select" th:style="${usuarioAutenticado.role !='Administrador'} ? @{pointer-events: none;}">
+                                    <option value="5.0">5.0</option>
+                                    <option value="4.5">4.5</option>
+                                    <option value="4.0">4.0</option>
+                                    <option value="3.5">3.5</option>
+                                    <option value="3.0">3.0</option>
+                                    <option value="2.5">2.5</option>
+                                    <option value="2.0">2.0</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="1.0">1.0</option>
+                                    <option value="0.5">0.5</option>
+                                </select>
+                                <script th:inline="javascript">
+                                    /*<![CDATA[*/
+                                    var ratingValue = /*[[${produto.rating}]]*/ null;
+                                    if (ratingValue !== null) {
+                                        document.getElementById("rating").value = ratingValue.toString();
+                                    }
+                                    /*]]>*/
+                                </script>
+                                <span th:errors="*{rating}" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        <!-- Descrição -->
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição:</label>
+                            <textarea th:field="*{description}" maxlength="2000" class="form-control"
+                                th:readonly="${usuarioAutenticado.role!='Administrador'}"></textarea>
+                            <span th:errors="*{description}" class="text-danger"></span>
+                        </div>
+
+
+                        <button class="btn btn-success" th:unless="${usuarioAutenticado.role!='Administrador'}" type="button" id="btnNovaImagem">Incluir nova imagem</button>
+
+                        <div class="overflow-auto  d-flex pt-4">
+                            <div class="row flex-nowrap p-1" id="inputImagem">
+                                <fieldset class="col-md-15 card mx-2 "
+                                    style="max-width: 250px; max-height: 400px;min-height: 300px;"
+                                    th:each="imagem, iterStat   : *{imagens}">
+                                    <img class="card-img-top" th:id="'selectedImage' + ${iterStat.index}"
+                                        th:onclick="'document.getElementById(\'incluirImagem' + ${iterStat.index} + '\').click()'"
+                                        th:src="'/img/produtos/' + ${imagem.nomeArquivo}"
+                                        style="width: 200px; cursor: pointer;" />
+
+                                    <input th:id="'incluirImagem' + ${iterStat.index}" type="file"
+                                        th:field="*{imagens[__${iterStat.index}__].arquivo}" class="form d-none"
+                                        th:attr="onchange=|displaySelectedImage(event, `selectedImage${iterStat.index}`)|"
+                                        accept="image/*" th:disabled="${usuarioAutenticado.role!='Administrador'}" />
+                                        
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center" style="gap: 20px;">
+                                            <label for="principal${iterStat.index}">Principal: </label>
+                                            <input type="checkbox" th:field="*{imagens[__${iterStat.index}__].principal}" th:disabled="${usuarioAutenticado.role!='Administrador'}" />
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button class="btn btn-danger delete-button" type="button" th:disabled="${usuarioAutenticado.role!='Administrador'}"
+                                                th:attr="data-image-id=${imagem.id}">Deletar</button>
+                                                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                        </div>
+
+                        <div class="my-3 text-end">
+                            <a href="/backoffice/produtos" class="btn btn-danger btn-lg">Cancelar</a>
+                            <button class="btn btn-primary btn-lg">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+
+        <div th:replace="fragments/fooster.html :: adm-fooster"></div>
+        <script src="/js/formProduto.js"></script>
+
+</body>
+
+
+</html>

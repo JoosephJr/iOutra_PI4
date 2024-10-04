@@ -1,100 +1,117 @@
 package com.example.iOutra.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
-@Table(name = "Produto")
+@Data
+@Table
 public class Produto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idProduto;
+    private Long id;
 
-    private String nomeProduto;
+    private String name;
 
-    @Column(columnDefinition = "TEXT")
-    private String descricao;
+    private String description;
 
-    private float avaliacao;
+    private float rating;
 
-    private BigDecimal preco;
+    private BigDecimal price;
 
-    private Integer qtdEstoque;
+    private Integer stockQuantity;
 
     private boolean isActive = true;
 
-    private String imageFileName;
+    @ManyToOne
+    private Carrinho carrinho;
 
-    public int getIdProduto() {
-        return idProduto;
+    @OneToMany(mappedBy = "produto", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private List<ImagemProduto> imagens;
+
+    @OneToMany(mappedBy = "produto", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private List<ItemPedido> itensPedido;
+
+    // Getters e Setters
+    public Long getId() {
+        return id;
     }
 
-    public void setIdProduto(int idProduto) {
-        this.idProduto = idProduto;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getNomeProduto() {
-        return nomeProduto;
+    public float getRating(){
+        return rating;
     }
 
-    public void setNomeProduto(String nomeProduto) {
-        this.nomeProduto = nomeProduto;
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getName() {
+        return name;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public float getAvaliacao() {
-        return avaliacao;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAvaliacao(float avaliacao) {
-        this.avaliacao = avaliacao;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public BigDecimal getPreco() {
-        return preco;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
-    public Integer getQtdEstoque() {
-        return qtdEstoque;
+    public Integer getStockQuantity() {
+        return stockQuantity;
     }
 
-    public void setQtdEstoque(Integer qtdEstoque) {
-        this.qtdEstoque = qtdEstoque;
+    public void setStockQuantity(Integer stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
 
     public boolean isActive() {
         return isActive;
     }
 
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
-    public String getImageFileName() {
-        return imageFileName;
+    public List<ImagemProduto> getImagens() {
+        return imagens;
     }
 
-    public void setImageFileName(String imageFileName) {
-        this.imageFileName = imageFileName;
+    public void setImagens(List<ImagemProduto> imagens) {
+        this.imagens = imagens;
     }
 
-    
+    @Override
+    public String toString() {
+        return "Produto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", stockQuantity=" + stockQuantity +
+                ", isActive=" + isActive +
+                ", rating=" + rating +
+                "imagens=" + imagens +
+                '}';
+    }
 }
