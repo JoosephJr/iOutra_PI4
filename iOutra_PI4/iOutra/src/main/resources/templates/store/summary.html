@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumo do pedido</title>
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body style="background-color: #F9F6F1;">
+    <div th:replace="fragments/store/header.html :: loja-header"></div>
+    <div class="container bg-white px-5 py-2 shadow-sm" style="margin-top: 100px;">
+        <h3 class="text-primary text-center">Resumo do pedido:</h3>
+
+        <!-- INFORMAÇÕES DO PEDIDO -->
+        <div class="container bg-light border shadow-sm my-2">
+            <h5 class="text-center my-3">Informações do pedido: </h5>
+            <div class="row">
+                <div class="col">
+
+                </div>
+                <div class="container px-5">
+                    <div class="d-flex justify-content-between">
+                        <label for="" th:text="'Valor dos Produtos: '"></label>
+                        <label for="" th:text="'R$' + ${session.carrinho.total}"></label>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <label for="" th:text="'Valor do Frete:'"></label>
+                        <label id="freteValue" for=""
+                            th:text="'R$ ' + ${#numbers.formatDecimal(session.pedido.valorFrete,  0, 'COMMA', 2, 'POINT')}"></label>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <label for="" th:text="'Forma de pagamento: '"></label>
+                        <label id="totalAPrazo" for="" th:text="${session.pedido.formaPagamento}"></label>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <label for="" th:text="'Valor a pagar: '"></label>
+                        <h5 id="totalAVista" for=""
+                            th:text="'R$' + ${#numbers.formatDecimal(session.pedido.total, 0, 'COMMA', 2, 'POINT')}"></h5>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- INFORMAÇÕES DA ENTREGA -->
+        <div class="container bg-light border shadow-sm my-2" th:unless="${session.client == null}">
+            <div class="container">
+                <h5 class="text-center my-3">Endereço de entrega:</h5>
+                <input type="text" hidden id="idEnderecoPrincipal" name="idEnderecoPrincipal"
+                    th:value="${session.entrega.id}">
+                <div>
+                    <!-- Descrição e valor para a rua -->
+                    <label>Rua:</label>
+                    <span th:text="${session.entrega.street}"></span>
+                </div>
+                <div>
+                    <!-- Descrição e valor para o número -->
+                    <label>Número:</label>
+                    <span th:text="${session.entrega.number}"></span>
+                </div>
+
+                <div>
+                    <!-- Descrição e valor para o número -->
+                    <label>Complemento:</label>
+                    <span th:text="${session.entrega.complement}"></span>
+                </div>
+
+                <div>
+                    <!-- Descrição e valor para o estado -->
+                    <label>Estado:</label>
+                    <span th:text="${session.entrega.state}"></span>
+                </div>
+                <div>
+                    <!-- Descrição e valor para o CEP -->
+                    <label>CEP:</label>
+                    <span th:text="${session.entrega.zipCode}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="container bg-light border shadow-sm my-2">
+            <h5 class="text-center my-3">Itens do pedido:</h5>
+            <table class="table table-bordered text-center ">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Imagem</th>
+                        <th>Produto</th>
+                        <th>Preço unitário</th>
+                        <th>Quantidade</th>
+                        <th>Preço total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${session.carrinho.itens}" class="border border-left rounded my-2 bg-light p-3">
+                        <td>
+                            <img th:src="${'/img/produtos/' + item.imagem}" class="img-fluid" style="width: 150px;">
+                        </td>
+                        <td class="align-middle">
+                            <label th:text="${item.produto.name}"></label>
+                        </td>
+                        <td class="align-middle">
+                            <label th:text="'R$ ' + ${item.produto.price}"></label>
+                        </td>
+                        <td class="align-middle">
+                            <label th:text="${item.quantidade}"></label>
+                        </td>
+                        <td class="align-middle">
+                            <label th:text="'R$ ' + ${item.total}"></label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between">
+
+            <a class="btn btn-warning" href="/pagamento">Voltar</a>
+            <form action="/resumo/concluir-pagamento" method="post">
+                <button class="btn btn-success" type="submit">Concluir pagamento</button>
+            </form>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

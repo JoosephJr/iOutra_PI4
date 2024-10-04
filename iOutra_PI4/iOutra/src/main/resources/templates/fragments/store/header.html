@@ -1,0 +1,60 @@
+<nav th:fragment="loja-header" class="navbar navbar-expand-lg bg-body-tertiary shadow-sm fixed-top p-0">
+  <div class="container-fluid d-flex justify-content-between align-items-center bg-dark px-5">
+
+    <!-- Logo à esquerda -->
+    <div>
+      <a class="image-thumbnail" aria-current="page" href="/">
+        <img src="/img/logo.svg" style="width: 40px;" alt="">
+      </a>
+    </div>
+
+    <!-- Título no meio -->
+    <div class="col-md-6 text-start my-3">
+      <form>
+        <div class="input-group">
+          <input class="form-control" type="text" id="fullname" name="fullname" placeholder="Procurar Tapete">
+          <button class="btn btn-warning" type="button"><img src="/img/lupa.svg" width="30px" alt=""></button>
+        </div>
+      </form>
+    </div>
+
+
+    <span th:if="${session.client != null}" class="d-flex">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          Olá, <span th:text="${session.client.fullName}"></span>
+        </button>
+
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" th:href="'/cadastro/' + ${session.client.id}">Ver Perfil</a></li>
+          <li><a class="dropdown-item" href="/pedidos">Ver Pedidos</a></li>
+        </ul>
+      </div>
+
+      <form th:action="@{/sair}" method="post">
+        <button class="btn btn-danger mx-2" type="submit">Sair</button>
+      </form>
+    </span>
+
+    <span th:unless="${session.client != null}">
+      <div id="login-section" class="d-flex">
+
+        <a href="/login" class="text-light fs-5" id="login-link">Entrar</a>
+        <label for="" class="text-light fs-5">/</label>
+        <a href="/cadastro" class="text-light fs-5" id="cadastrar-link">Cadastrar-se</a>
+      </div>
+    </span>
+
+    <a href="/carrinho" class="position-relative">
+      <img src="/img/cart.svg" alt="Carrinho" style="height: 2rem;">
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+          th:text="${session.carrinho != null && session.carrinho.itens != null ? session.carrinho.itens.size() : ''}">
+          <span class="visually-hidden">Itens no carrinho</span>
+      </span>
+  </a>
+  
+
+  </div>
+
+</nav>

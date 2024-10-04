@@ -4,70 +4,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yotra</title>
+    <title>Harmony</title>
     <link rel="icon" type="image/x-icon" href="/img/logo.svg">
     <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
 </head>
 
-<body>
-<div th:replace="fragments/loja/header.html :: loja-header"></div>
-<main style="margin-top: 100px;">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+<body style="background-color: #F9F6F1;">
+    <div th:replace="fragments/store/header.html :: loja-header"></div>
+    <main style="margin-top: 100px;">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
 
-        h1 {
-            font-family: 'Great Vibes', cursive;
-            font-weight: 700;
-            font-size: 2.5rem;
-        }
+            h1 {
+                font-family: 'Great Vibes', cursive;
+                font-weight: 700;
+                font-size: 2.5rem;
+            }
 
-        .card-img-top {
-            height: 200px;
-            object-fit: cover;
-        }
-    </style>
-    <div class="container" style="height: 100vh;">
-        <h1 class="text-center mb-5">Yotra: Artigos de Hipismo </h1>
+            .card-img-top {
+                height: 200px;
+                object-fit: cover;
+            }
+        </style>
+        <div class="container" style="height: 100vh;">
+            <h1 class="text-center mb-5">Harmony Equilíbrio em Movimento.</h1>
 
-        <div class="row">
-            <div class="col-12 col-sm-6 col-md-3 mb-4" th:each="produto : ${produtoPage}">
-                <th:block th:if="${produto.imagens.size() > 0}">
-                    <div class="card text-center">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-3 mb-4" th:each="produto : ${produtoPage}">
+                    <th:block th:if="${produto.imagens.size() > 0}">
+                        <div class="card text-center">
 
-                        <th:block th:each="imagem : ${produto.imagens}">
-                            <img th:if="${imagem.isPrincipal}" th:src="${'/img/produtos/' + imagem.nomeArquivo}"
-                                 class="card-img-top" alt="Imagem do Produto">
-                        </th:block>
+                            <th:block th:each="imagem : ${produto.imagens}">
+                                <img th:if="${imagem.isPrincipal}" th:src="${'/img/produtos/' + imagem.nomeArquivo}"
+                                    class="card-img-top" alt="Imagem do Produto">
+                            </th:block>
 
-                        <div class="card-body">
-                            <h5 class="card-title" th:text="${produto.name}"></h5>
-                            <p class="card-text" th:text="${'R$ ' + produto.price}"></p>
-                            <p class="mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${produto.name}"></h5>
+                                <p class="card-text" th:text="${'R$ ' + produto.price}"></p>
+                                <p class="mb-3">
                                     <span th:each="i : ${#numbers.sequence(1, produto.rating)}">
                                         <img src="/img/star.svg" alt="Estrela" width="20px">
                                     </span>
-                                <span th:if="${produto.rating % 1 != 0}">
+                                    <span th:if="${produto.rating % 1 != 0}">
                                         <img src="/img/half-star.png" alt="Meia estrela" width="20px">
                                     </span>
-                            </p>
-                            <a th:href="@{/produto(id=${produto.getId})}" target="_blank"
-                               class="btn btn-primary">Detalhe</a>
+                                </p>
+                                <a th:href="@{/produto(id=${produto.getId})}"
+                                    class="btn btn-primary">Detalhe</a>
+                            </div>
                         </div>
-                    </div>
-                </th:block>
+                    </th:block>
+                </div>
             </div>
         </div>
-    </div>
 
-</main>
+    </main>
 
-<footer class="bg-light py-4" style="position: relative; bottom: 0; width: 100%; margin-top: 500px;">
-    <div class="container text-center">
-        <p class="mb-0">© 2024 Todos os direitos reservados. <br> Desenvolvido por Yotra RBA.</p>
-
-    </div>
-</footer>
-
+    <footer class="bg-light py-4" style="position: relative; bottom: 0; width: 100%; margin-top: 500px;">
+        <div class="container text-center">
+            <p class="mb-0">© 2024 Harmony. Todos os direitos reservados. <br> Desenvolvido por Bravos do TI.</p>
+    
+        </div>
+    </footer>
+    
 </body>
 
 </html>

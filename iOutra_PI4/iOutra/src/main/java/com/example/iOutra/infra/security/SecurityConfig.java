@@ -1,4 +1,4 @@
-package com.example.iOutra.seguranca;
+package com.example.iOutra.infra.security;
 
 import com.example.iOutra.services.MyUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class SecurityConfig {
 
                     //Livre acesso
                     registry.requestMatchers("/resumo", "/resumo/**", "/pagamento", "/pagamento/**","/addEndereco",
-                            "/setup", "/img/**", "/css/**", "/css", "/backoffice/setup", "/", "/produto", "/login",
+                            "/setup", "/static/css/img/**", "/css/**", "/css", "/backoffice/setup", "/", "/produto", "/login",
                             "/cadastro", "/cadastro/**","/sair", "/carrinho", "/item", "/item/**", "/itemreduzir", "/remover",
                             "/pedidos", "/pedidos/**", "/comprar").permitAll();
 

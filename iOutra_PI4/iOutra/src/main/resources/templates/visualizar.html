@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <link rel="icon" type="image/x-icon" href="/static/css/img/logo.svg">
     <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
 
     <title>Detalhes Produto</title>
@@ -66,10 +66,10 @@
 
                 <p class="mb-3">
                         <span th:each="i : ${#numbers.sequence(1, produto.rating)}">
-                            <img src="/img/star.svg" alt="Estrela" width="20px">
+                            <img src="/static/css/img/star.svg" alt="Estrela" width="20px">
                         </span>
                     <span th:if="${produto.rating % 1 != 0}">
-                            <img src="/img/half-star.png" alt="Meia estrela" width="20px">
+                            <img src="/static/css/img/half-star.png" alt="Meia estrela" width="20px">
                         </span>
                 </p>
 

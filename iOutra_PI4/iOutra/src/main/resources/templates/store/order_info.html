@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+    <title>Detalhe do pedido</title>
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body style="background-color: #F9F6F1;">
+    <div th:replace="fragments/store/header.html :: loja-header"></div>
+
+    <div class="container bg-white shadow-sm p-5" style="margin-top: 100px;">
+        <h2 class="mb-4 text-center" th:text="'Detalhes do Pedido: ' + ${pedido.serial}"></h2>
+
+        <div class="container bg-light border rounded p-4 my-3">
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="card-text">Valor dos produtos:</h4>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="card-text" th:text="'R$ ' + ${pedido.total - pedido.valorFrete} "></h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="card-text">Valor do Frete:</h4>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="card-text" th:text="'R$ ' + ${pedido.valorFrete}"></h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="card-text">Valor total do pedido:</h4>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="card-text text-success" th:text="'R$ ' + ${pedido.total}"></h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="card-text">Forma de Pagamento:</h4>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="card-text" th:text="${pedido.formaPagamento}"></h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="card-text">Data do Pedido:</h4>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="card-text" th:text="${pedido.dataPedido}"></h4>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="container bg-light border rounded p-4 my-3">
+            <h4 for="">Status do pedido: </h4>
+            <h5 class="card-text" th:classappend="${pedido.status == 'Entregue' ? 'text-success' : (pedido.status == 'Pagamento rejeitado' ? 'text-danger' : 'text-warning')}" th:text="${pedido.status}"></h5>
+        </div>
+
+
+
+        <div class="container bg-light border rounded p-4 my-3">
+
+            <h4>Itens do pedido:</h4>
+            <div class="col-md-12" th:each="item : ${itens}">
+
+                <div class="row mt-3">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="text-center" th:text="${item.produto.name}"></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <th:block th:each="imagem : ${item.produto.imagens}">
+                                            <img th:if="${imagem.isPrincipal}"
+                                                th:src="${'/img/produtos/' + imagem.nomeArquivo}" class="img-fluid"
+                                                style="max-height: 200px;">
+                                        </th:block>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="fw-bold">Quantidade:</label>
+                                                <p th:text="${item.quantidade}"></p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="fw-bold">Total:</label>
+                                                <p th:text="${item.total}"></p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class="fw-bold">Descrição:</label>
+                                                <p th:text="${item.produto.description}"></p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-md-12">
+                                                <label class="fw-bold">Valor Unitário:</label>
+                                                <p th:text="${item.produto.price}"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

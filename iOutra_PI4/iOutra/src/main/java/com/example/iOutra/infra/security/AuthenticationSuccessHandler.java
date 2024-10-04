@@ -1,4 +1,4 @@
-package com.example.iOutra.seguranca;
+package com.example.iOutra.infra.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

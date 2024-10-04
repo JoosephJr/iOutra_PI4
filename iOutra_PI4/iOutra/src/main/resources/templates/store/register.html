@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulário de Cadastro</title>
+  <link rel="icon" type="image/x-icon" href="/img/logo.svg">
+  <!-- Incluindo Bootstrap CSS -->
+  <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body style="background-color: rgb(241, 240, 233);">
+  <div th:replace="fragments/store/header.html :: loja-header"></div>
+
+  <div class="container p-5 shadow-lg" style="background-color: rgba(255, 255, 255, 0.469); margin-top: 100px;">
+    <div class="container">
+
+      <span th:if="${nameClient == null}">
+        <div class="container text-center">
+          <h2>Cadastre-se na Loja Harmony</h2>
+          <p class="row">Seja bem-vindo à loja Harmony, o seu destino para encontrar os melhores tapetes de yoga para
+            aprimorar sua prática diária. Cadastre-se agora para desfrutar de uma experiência de compra harmoniosa e
+            tranquila. Ao se cadastrar, você terá acesso a uma variedade de tapetes de yoga de alta qualidade,
+            cuidadosamente selecionados para atender às suas necessidades e preferências individuais.</p>
+        </div>
+      </span>
+
+      <span th:if="${nameClient != null}">
+        <div class="container text-center">
+          <h3>Olá, <span th:text="${clientDTO.fullName}"></span></h3>
+          <h4>Editar dados</h4>
+        </div>
+      </span>
+
+
+      <form th:action="@{${clientDTO.id != null} ? '/cadastro/' + ${clientDTO.id} : '/cadastro'}"
+        th:object="${clientDTO}" method="POST">
+
+        <div class="info-pessoal shadow-sm bg-light p-5 mb-3">
+
+          <!-- ID -->
+          <div th:if="${clientDTO.id != null}">
+            <input type="hidden" th:field="*{id}" readonly>
+          </div>
+
+          <h4 class="mb-3">Informações pessoais</h4>
+          <div class="mb-3">
+            <input type="text" class="form-control" placeholder="Nome completo" th:field="*{fullName}">
+            <span th:errors="*{fullName}" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <input type="text" class="form-control" placeholder="CPF" th:field="*{cpf}"
+              th:readonly="${clientDTO.id != null}">
+            <span th:errors="*{cpf}" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <input type="date" class="form-control" placeholder="Data nascimento" th:field="*{birthDate}">
+            <span th:errors="*{birthDate}" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <select class="form-select" th:field="*{gender}">
+              <option value="Masculino">Masculino</option>
+              <option value="Feminino">Feminino</option>
+            </select>
+            <span th:errors="*{gender}" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <input type="email" class="form-control" placeholder="Email" th:field="*{email}"
+              th:readonly="${clientDTO.id != null}">
+            <span th:errors="*{email}" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <input type="password" class="form-control" placeholder="Senha" th:field="*{password}">
+            <span th:errors="*{password}" class="text-danger"></span>
+          </div>
+
+        </div>
+
+        <!-- ENDEREÇO DE FATURAMENTO -->
+        <div class="container-faturamento shadow-sm bg-light p-5 mb-3">
+          <h4>Endereço de faturamento: </h4>
+          <fieldset id="faturamento">
+
+            <input type="hidden" th:field="*{billingAddress.id}" readonly>
+
+            <div class="mb-3">
+              <input type="text" class="form-control" maxlength="9" placeholder="CEP" id="cepFaturamento"
+                th:field="*{billingAddress.zipCode}">
+              <span th:errors="*{billingAddress.zipCode}" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Logradouro" id="logradouroFaturamento"
+                th:field="*{billingAddress.street}">
+              <span th:errors="*{billingAddress.street}" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Número" id="numeroFaturamento"
+                th:field="*{billingAddress.number}">
+              <span th:errors="*{billingAddress.number}" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Complemento" id="complementoFaturamento"
+                th:field="*{billingAddress.complement}">
+              <span th:errors="*{billingAddress.complement}" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Bairro" id="bairroFaturamento"
+                th:field="*{billingAddress.neighborhood}">
+              <span th:errors="*{billingAddress.neighborhood}" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="Cidade" id="cidadeFaturamento"
+                th:field="*{billingAddress.city}">
+              <span th:errors="*{billingAddress.city}" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" placeholder="UF" id="ufFaturamento"
+                th:field="*{billingAddress.state}">
+              <span th:errors="*{billingAddress.state}" class="text-danger"></span>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- ENDEREÇO(S) DE ENTREGA -->
+        <div class="container-entrega shadow-sm bg-light p-5">
+          <h4>Endereços de entrega</h4>
+          <div id="inputEnderecosEntrega">
+            <span th:errors="*{deliveryAddresses}" class="text-danger"></span>
+            <fieldset class="border p-5 my-3 rounded" th:attr="id='faturamento-' + ${iterStat.index}"
+              th:each="address, iterStat : *{deliveryAddresses}" th:if="${address.active}">
+              <!-- ID -->
+              <input type="hidden" th:field="*{deliveryAddresses[__${iterStat.index}__].id}" readonly>
+              <legend th:text="'Endereço: ' + ${iterStat.index + 1}"></legend>
+
+              <div class="mb-3">
+                <input type="text" class="form-control" maxlength="9" placeholder="CEP" th:id="cep + ${iterStat.index}"
+                  th:field="*{deliveryAddresses[__${iterStat.index}__].zipCode}" th:readonly="${clientDTO.deliveryAddresses.size() > 1}">
+                <span th:errors="*{deliveryAddresses[__${iterStat.index}__].zipCode}" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Logradouro" th:id="logradouro + ${iterStat.index}"
+                  th:field="*{deliveryAddresses[__${iterStat.index}__].street}" th:readonly="${clientDTO.deliveryAddresses.size() > 1}">
+                <span th:errors="*{deliveryAddresses[__${iterStat.index}__].street}" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Número" th:id="numero + ${iterStat.index}"
+                  th:field="*{deliveryAddresses[__${iterStat.index}__].number}" th:readonly="${clientDTO.deliveryAddresses.size() > 1}">
+                <span th:errors="*{deliveryAddresses[__${iterStat.index}__].number}" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Complemento"
+                  th:id="complemento + ${iterStat.index}"
+                  th:field="*{deliveryAddresses[__${iterStat.index}__].complement}" th:readonly="${clientDTO.deliveryAddresses.size() > 1}">
+                <span th:errors="*{deliveryAddresses[__${iterStat.index}__].complement}" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Bairro" th:id="bairro + ${iterStat.index}"
+                  th:field="*{deliveryAddresses[__${iterStat.index}__].neighborhood}" th:readonly="${clientDTO.deliveryAddresses.size() > 1}">
+                <span th:errors="*{deliveryAddresses[__${iterStat.index}__].neighborhood}" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Cidade" th:id="cidade + ${iterStat.index}"
+                  th:field="*{deliveryAddresses[__${iterStat.index}__].city}" th:readonly="${clientDTO.deliveryAddresses.size() > 1}">
+                <span th:errors="*{deliveryAddresses[__${iterStat.index}__].city}" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="UF" th:id="uf + ${iterStat.index}"
+                  th:field="*{deliveryAddresses[__${iterStat.index}__].state}" th:readonly="${clientDTO.deliveryAddresses.size() > 1}">
+                <span th:errors="*{deliveryAddresses[__${iterStat.index}__].state}" class="text-danger"></span>
+              </div>
+              <div class="form-check mb-3" id="firstCheck"
+                th:style="${clientDTO.deliveryAddresses.size() > 1} ? 'display: block;' : 'display: none;'">
+                <input checked style="width: 20px; height: 20px;" class="form-check-input" type="checkbox"
+                  th:field="*{deliveryAddresses[__${iterStat.index}__].default}" th:readonly="${clientDTO.deliveryAddresses.size() > 1}" />
+                <label class="form-check-label">Principal </label>
+
+              </div>
+
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-primary"
+                  onclick="copiarEnderecoFaturamento(this.closest('fieldset'))">Copiar endereço de faturamento</button>
+                <button class="btn btn-danger btn-delete-address" th:attr="data-id=${address.id}"
+                  type="button">Deletar</button>
+              </div>
+            </fieldset>
+
+          </div>
+          <div>
+            <button class="btn btn-warning mb-3" type="button" id="btnNovoEndereco">Adicionar outro endereço</button>
+          </div>
+        </div>
+        <div class="container text-end">
+          <button class="btn btn-success btn-lg mt-3 " type="submit"
+            th:text="${clientDTO.id == null} ? 'Criar conta' : 'Salvar'"></button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+
+    window.onload = function () {
+      var fieldsetCount = document.querySelectorAll('fieldset[id^="faturamento-"]').length;
+
+      if (fieldsetCount === 1) {
+        document.getElementById('firstCheck').style.display = 'none';
+        document.querySelectorAll('.btn-delete-address').forEach(function (button) {
+          button.style.display = 'none';
+        });
+      }
+    };
+
+    // Função para preencher o endereço com base no CEP
+    function preencherEndereco(cepInputId) {
+      const cepInput = document.getElementById(cepInputId);
+      const cepValue = cepInput.value.trim();
+      if (cepValue.length !== 9) {
+        return;
+      }
+
+      fetch(`https://viacep.com.br/ws/${cepValue}/json/`)
+        .then(response => response.json())
+        .then(data => {
+
+          const parentFieldset = cepInput.closest('fieldset');
+
+          if (!(data && data.logradouro && data.bairro && data.localidade && data.uf)) {
+            alert("CEP inválido");
+            // Limpar os campos de endereço
+            parentFieldset.querySelector('[id^="logradouro"]').value = '';
+            parentFieldset.querySelector('[id^="bairro"]').value = '';
+            parentFieldset.querySelector('[id^="cidade"]').value = '';
+            parentFieldset.querySelector('[id^="uf"]').value = '';
+            return;
+          }
+
+          // Obter o fieldset pai do input do CEP
+
+
+          // Atualizar os inputs do fieldset com os dados do CEP
+          parentFieldset.querySelector('[id^="logradouro"]').value = data.logradouro || '';
+          parentFieldset.querySelector('[id^="bairro"]').value = data.bairro || '';
+          parentFieldset.querySelector('[id^="cidade"]').value = data.localidade || '';
+          parentFieldset.querySelector('[id^="uf"]').value = data.uf || '';
+        })
+        .catch(error => console.error('Erro ao buscar os dados do CEP:', error));
+    }
+
+
+    // Adiciona evento de input para os campos de CEP dos endereços de entrega
+    const inputsCepEntrega = document.querySelectorAll('[id^="cep"]');
+    inputsCepEntrega.forEach(input => {
+      input.addEventListener('input', function () {
+        const cepValue = this.value.trim();
+        const enderecoCounter = this.id.replace('cep', '');
+        const logradouroInputId = `logradouro${enderecoCounter}`;
+        const bairroInputId = `bairro${enderecoCounter}`;
+        const cidadeInputId = `cidade${enderecoCounter}`;
+        const ufInputId = `uf${enderecoCounter}`;
+
+        preencherEndereco(this.id, logradouroInputId, bairroInputId, cidadeInputId, ufInputId);
+      });
+    });
+
+    // Função para copiar o endereço de faturamento para um novo endereço de entrega
+    function copiarEnderecoFaturamento(fieldset) {
+      const cepFaturamento = document.getElementById('cepFaturamento').value;
+      const logradouroFaturamento = document.getElementById('logradouroFaturamento').value;
+      const numeroFaturamento = document.getElementById('numeroFaturamento').value;
+      const complementoFaturamento = document.getElementById('complementoFaturamento').value;
+      const bairroFaturamento = document.getElementById('bairroFaturamento').value;
+      const cidadeFaturamento = document.getElementById('cidadeFaturamento').value;
+      const ufFaturamento = document.getElementById('ufFaturamento').value;
+
+      // Seleciona os campos do endereço de entrega dentro do fieldset
+      const inputsEnderecoEntrega = fieldset.querySelectorAll('input');
+
+      // Define os valores dos campos de endereço de entrega para os valores do endereço de faturamento
+      inputsEnderecoEntrega[1].value = cepFaturamento;
+      inputsEnderecoEntrega[2].value = logradouroFaturamento;
+      inputsEnderecoEntrega[3].value = numeroFaturamento;
+      inputsEnderecoEntrega[4].value = complementoFaturamento;
+      inputsEnderecoEntrega[5].value = bairroFaturamento;
+      inputsEnderecoEntrega[6].value = cidadeFaturamento;
+      inputsEnderecoEntrega[7].value = ufFaturamento;
+    }
+
+    // Adiciona evento de click para adicionar novo endereço de entrega
+    document.getElementById('btnNovoEndereco').onclick = function () {
+
+
+      document.getElementById('firstCheck').style.display = 'block';
+
+
+      const qtdFieldset = document.querySelectorAll('#inputEnderecosEntrega > fieldset').length;
+      const enderecoCounter = qtdFieldset;
+
+      // Insere o novo campo de endereço de entrega
+      document.getElementById('inputEnderecosEntrega').insertAdjacentHTML('beforeend',
+        `
+        <fieldset class="border p-5 my-3 rounded" id="endereco-entrega${enderecoCounter}">
+            <legend>Endereço ${enderecoCounter + 1}:</legend>
+            <input type="hidden" name="deliveryAddresses[${qtdFieldset}].id" readonly>
+            <div class="mb-3">
+                <input type="text" class="form-control cep-input" id="cep${enderecoCounter}" name="deliveryAddresses[${qtdFieldset}].zipCode" maxlength="9" placeholder="CEP" oninput="preencherEndereco('cep${enderecoCounter}', 'logradouro${enderecoCounter}', 'bairro${enderecoCounter}', 'cidade${enderecoCounter}', 'uf${enderecoCounter}')">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="deliveryAddresses[${qtdFieldset}].street" id="logradouro${enderecoCounter}" placeholder="Logradouro">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="deliveryAddresses[${qtdFieldset}].number"  id="numero${enderecoCounter}" placeholder="Número">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="deliveryAddresses[${qtdFieldset}].complement"  id="complemento${enderecoCounter}" placeholder="Complemento">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="deliveryAddresses[${qtdFieldset}].neighborhood" id="bairro${enderecoCounter}" placeholder="Bairro">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="deliveryAddresses[${qtdFieldset}].city" id="cidade${enderecoCounter}" placeholder="Cidade">
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="deliveryAddresses[${qtdFieldset}].state" id="uf${enderecoCounter}" placeholder="UF">
+            </div>
+            <div class="form-check mb-3">
+                <input style="width: 20px; height: 20px;" class="form-check-input" type="checkbox" name="deliveryAddresses[${qtdFieldset}].default"  />
+                <label class="form-check-label">Principal </label>
+              </div>
+            <button type="button" class="btn btn-primary" onclick="copiarEnderecoFaturamento(this.closest('fieldset'))">Copiar endereço de faturamento</button>
+        </fieldset>
+`
+      );
+    };
+
+    $(document).ready(function () {
+      $('.btn-delete-address').click(function () {
+        var addressId = $(this).data('id'); // Obter o ID do endereço a ser excluído
+        var confirmation = confirm('Tem certeza de que deseja excluir este endereço?');
+        if (confirmation) {
+          $.ajax({
+            url: '/cadastro/endereco/excluir/' + addressId,
+            type: 'POST',
+            success: function (response) {
+              // Recarregar a página ou atualizar a lista de endereços após a exclusão
+              location.reload(); // Recarregar a página
+              // Você pode atualizar a lista de endereços sem recarregar a página
+              // Aqui você pode adicionar código para atualizar a lista de endereços
+            },
+            error: function (xhr, status, error) {
+              console.error('Erro ao excluir endereço:', error);
+            }
+          });
+        }
+      });
+    });
+
+  </script>
+
+</body>
+
+</html>
