@@ -24,30 +24,45 @@ public class UsuarioController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    UsuarioRepository repository;
 
     @Autowired
     private Utils utils;
 
+    // USUARIOS REST - GET / POST / PUT / DELETE
+
     @GetMapping("usuarios")
     public String listarUsuarios(Model model, Authentication authentication) {
 
-        List <Usuario> usuariosList = usuarioRepository.findAll();
+        // Obtém a lista de usuários cadastrados no backoffice.
+        List<Usuario> usuarios = repository.findAll();
 
-        model.addAttribute("usuarios", usuariosList);
-        model.addAttribute("usuarioAutenticado" ,  utils.getUsuarioAutenticado(authentication) );
+        // Adiciona a lista de usuários ao modelo para exibição na página.
+        model.addAttribute("usuarios", usuarios);
+        model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
 
-        return "backoffice/usuario/lista-usuarios";
+        // Retorna o nome da página de listagem de usuários.
+        return "backoffice/usuario/lista_usuarios";
     }
 
     @GetMapping("procurar")
-    public String procurar (Model model, @RequestParam(name = "nome", required = false) String nome,
-                            Authentication authentication) {
-        List <Usuario> usuarios = usuarioRepository.findByNomeContainingIgnoreCase(nome);
+    public String procurar(Model model, @RequestParam(name = "fullname", required = false) String fullname,
+                           Authentication authentication) {
+
+        List<Usuario> usuarios = repository.findByFullnameContainingIgnoreCase(fullname);
 
         model.addAttribute("usuarios", usuarios);
-        model.addAttribute("usuariosAutenticado" , utils.getUsuarioAutenticado(authentication));
-        return "backoffice/usuario/lista-usuarios";
+        model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
+        return "backoffice/usuario/lista_usuarios";
+    }
+
+    // Método para habilitar ou desabilitar o usuário
+    @PostMapping("trocar-status-usuario/{id}")
+    public String habilitaDesabilita(@PathVariable long id) {
+        Usuario usuario = repository.findById(id).get();
+        usuario.setActive(!usuario.isActive());
+        repository.save(usuario);
+        return "redirect:/backoffice/usuarios";
     }
 
     @GetMapping("usuarios/cadastro")
@@ -56,14 +71,15 @@ public class UsuarioController {
         return "backoffice/usuario/form_usuario";
     }
 
+
     @GetMapping("usuarios/{id}")
-    public String handleBackOfficeGetUsuario(@PathVariable Long id, Model model, Authentication authentication) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow();
+    public String handleBackofficeGetUsuario(@PathVariable Long id, Model model, Authentication authentication) {
+        Usuario usuario = repository.findById(id).orElseThrow();
         model.addAttribute("usuario", usuario);
         model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
         return "backoffice/usuario/form_usuario";
-
     }
+
     @PostMapping("usuario/cadastra")
     public String salvaFormulario(@Valid Usuario usuario, BindingResult result, Authentication authentication, Model model) {
 
@@ -72,21 +88,21 @@ public class UsuarioController {
         model.addAttribute("usuario", usuario);
 
         // Valida o CPF
-        if (!ValidaCpf.isCPF(usuario.getCpf())) {
+        if (!ValidaCPF.isCPF(usuario.getCpf())) {
             result.rejectValue("cpf", "error.cpf", "Cpf inválido");
         }
 
         // Validar senha vazia
-        if (usuario.getSenha().trim().isEmpty() || usuario.getSenha().length() < 4) {
+        if (usuario.getPassword().trim().isEmpty() || usuario.getPassword().length() < 4) {
             result.rejectValue("password", "error.password", "Senha ter pelo menos 4 caracteres");
         }
 
         // Valida se já existe esse email ou cpf
-        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
+        if (repository.existsByEmail(usuario.getEmail())) {
             result.rejectValue("username", "error.username", "Email já cadastrado");
         }
 
-        if (usuarioRepository.existsByCpf(usuario.getCpf())) {
+        if (repository.existsByCpf(usuario.getCpf())) {
             result.rejectValue("cpf", "error.cpf", "Cpf já cadastrado");
         }
 
@@ -94,12 +110,11 @@ public class UsuarioController {
             return "backoffice/usuario/form_usuario";
         }
 
-        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
-        usuarioRepository.save(usuario);
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        repository.save(usuario);
 
         return "redirect:/backoffice/usuarios";
     }
-
 
     @PostMapping("usuario/edita")
     public String handleBackofficeEditar(@Valid Usuario usuario, BindingResult result, Authentication authentication, Model model) {
@@ -109,12 +124,12 @@ public class UsuarioController {
         model.addAttribute("usuario", usuario);
 
         // Valida o CPF
-        if (!ValidaCpf.isCPF(usuario.getCpf())) {
+        if (!ValidaCPF.isCPF(usuario.getCpf())) {
             result.rejectValue("cpf", "error.cpf", "Cpf inválido");
         }
 
         // Valida se há outra usuário já cadastrado com esse CPF a não ser ele próprio
-        if (usuarioRepository.existsByCpfAndIdNot(usuario.getCpf(), usuario.getId())) {
+        if (repository.existsByCpfAndIdNot(usuario.getCpf(), usuario.getId())) {
             result.rejectValue("cpf", "error.cpf", "Cpf já cadastrado");
         }
 
@@ -129,22 +144,20 @@ public class UsuarioController {
         }
 
         // Check if a new password is provided
-        if (usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
+        if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
             // If a new password is provided, encode and set it
-            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         } else {
             // If no new password is provided, retain the existing password
-            Usuario existingUser = usuarioRepository.findById(usuario.getId()).orElse(null);
+            Usuario existingUser = repository.findById(usuario.getId()).orElse(null);
             if (existingUser != null) {
-                usuario.setSenha(existingUser.getSenha());
+                usuario.setPassword(existingUser.getPassword());
             }
         }
 
-        usuarioRepository.save(usuario);
+        repository.save(usuario);
 
         return "redirect:/backoffice/usuarios";
     }
-
-
 
 }

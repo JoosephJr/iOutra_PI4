@@ -1,4 +1,4 @@
-package com.example.iOutra.services;
+package com.example.iOutra.service;
 
 import com.example.iOutra.model.Usuario;
 import com.example.iOutra.repository.UsuarioRepository;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class MyUserDetails implements UserDetailsService {
+public class MyUserDetailService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -24,7 +24,7 @@ public class MyUserDetails implements UserDetailsService {
                 var userObj = user.get();
                 return User.builder()
                         .username(userObj.getEmail())
-                        .password(userObj.getSenha())
+                        .password(userObj.getPassword())
                         .roles(userObj.getGrupo())
                         .build();
             } else {

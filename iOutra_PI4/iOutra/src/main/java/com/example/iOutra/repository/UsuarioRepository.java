@@ -7,13 +7,16 @@ import com.example.iOutra.model.Usuario;
 import java.util.List;
 import java.util.Optional;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-
-
-    boolean existsByCpf(String cpf);
+    boolean existsByEmailOrCpf(String email, String cpf);
     boolean existsByCpfAndIdNot(String cpf, Long id);
-    Optional<Usuario> findByEmail(String email);
+
     boolean existsByEmail(String email);
-    List<Usuario> findByNomeContainingIgnoreCase(String nome);
+    boolean existsByCpf(String cpf);
+
+    Optional<Usuario> findByEmail(String email);
+
+    List<Usuario> findByFullnameContainingIgnoreCase(String fullname);
+
 }

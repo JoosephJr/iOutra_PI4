@@ -2,7 +2,7 @@ package com.example.iOutra.controller.backoffice.usuario;
 
 import java.util.InputMismatchException;
 
-public class ValidaCpf {
+public class ValidaCPF {
     public static boolean isCPF(String CPF) {
         // considera-se erro CPF"s formados por uma sequencia de numeros iguais
 

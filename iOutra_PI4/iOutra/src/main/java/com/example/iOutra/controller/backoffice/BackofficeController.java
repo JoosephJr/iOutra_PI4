@@ -3,6 +3,7 @@ package com.example.iOutra.controller.backoffice;
 import com.example.iOutra.model.Usuario;
 import com.example.iOutra.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,18 +23,20 @@ public class BackofficeController {
     @Autowired
     private Utils utils;
 
-    @GetMapping("cadastrarUsuario")
-    public String cadastrarUsuario(){
+    @GetMapping("setup")
+    public String cadastrarUsuario() {
 
         boolean userExists = repository.existsByEmail("admin@root.com");
-        if (userExists){
+
+        if (userExists) {
             return "backoffice";
         }
+
         Usuario usuario = new Usuario();
         usuario.setEmail("admin@root.com");
-        usuario.setNome("admin");
+        usuario.setFullname("admin");
         usuario.setCpf("99999999999");
-        usuario.setSenha(passwordEncoder.encode("admin"));
+        usuario.setPassword(passwordEncoder.encode("admin"));
         usuario.setRole("Administrador");
         usuario.setActive(true);
 
@@ -41,9 +44,18 @@ public class BackofficeController {
 
         return "redirect:/backoffice/login";
     }
+
+    @GetMapping("")
+    public String handleBackofficeLogin(Usuario usuario) {
+        return "backoffice/login";
     }
 
-
+    @GetMapping("home")
+    public String handleBackofficeHome(Model model, Authentication authentication) {
+        model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
+        return "backoffice/home";
+    }
+}
 
 
 

@@ -8,7 +8,7 @@ import com.example.iOutra.model.Produto;
 import com.example.iOutra.model.ProdutoDto;
 import com.example.iOutra.repository.ImagemProdutoRepository;
 import com.example.iOutra.repository.ProdutoRepository;
-import com.example.iOutra.services.ProdutoService;
+import com.example.iOutra.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

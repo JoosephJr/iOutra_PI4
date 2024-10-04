@@ -1,4 +1,4 @@
-package com.example.iOutra.services;
+package com.example.iOutra.service;
 
 import com.example.iOutra.model.Produto;
 import com.example.iOutra.repository.ProdutoRepository;

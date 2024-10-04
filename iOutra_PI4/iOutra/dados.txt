@@ -1,0 +1,13 @@
+INSERT INTO usuario (CONFIRM_SENHA, CPF, EMAIL, GRUPO, NOME, SENHA)
+VALUES 
+('7771234', '12345678910', 'arthur@gmail.com', 'Estoquista', 'Arthur Silva', '7771234'),
+('111222', '98765432123', 'emma@gmail.com', 'Admin', 'Emma Johnson', '111222'),
+('333444', '55566677788', 'oliver@gmail.com', 'Estoquista', 'Oliver Anderson', '333444'),
+('555666', '11122334455', 'ava@gmail.com', 'Admin', 'Ava Wilson', '555666'),
+('777888', '99988877766', 'noah@gmail.com', 'Estoquista', 'Noah Martinez', '777888'),
+('999000', '11223344556', 'mia@gmail.com', 'Admin', 'Mia Davis', '999000'),
+('121314', '98765432100', 'liam@gmail.com', 'Estoquista', 'Liam Brown', '121314'),
+('151617', '11223344557', 'sophia@gmail.com', 'Admin', 'Sophia White', '151617'),
+('181920', '33322211144', 'jackson@gmail.com', 'Estoquista', 'Jackson Taylor', '181920'),
+('212223', '55544433322', 'olivia@gmail.com', 'Admin', 'Olivia Johnson', '212223'),
+('242526', '11144488877', 'ethan@gmail.com', 'Estoquista', 'Ethan Miller', '242526');

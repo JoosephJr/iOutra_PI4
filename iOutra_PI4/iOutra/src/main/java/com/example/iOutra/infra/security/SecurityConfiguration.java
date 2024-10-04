@@ -1,6 +1,6 @@
 package com.example.iOutra.infra.security;
 
-import com.example.iOutra.services.MyUserDetails;
+import com.example.iOutra.service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +17,10 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfiguration {
 
     @Autowired
-    MyUserDetails myUserRepository;
+    MyUserDetailService myUserRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -28,21 +28,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
 
-                    //Livre acesso
-                    registry.requestMatchers("/resumo", "/resumo/**", "/pagamento", "/pagamento/**","/addEndereco",
-                            "/setup", "/static/css/img/**", "/css/**", "/css", "/backoffice/setup", "/", "/produto", "/login",
-                            "/cadastro", "/cadastro/**","/sair", "/carrinho", "/item", "/item/**", "/itemreduzir", "/remover",
-                            "/pedidos", "/pedidos/**", "/comprar").permitAll();
+                    /* Todos */
+                    registry.requestMatchers("/resumo", "/resumo/**", "/pagamento", "/pagamento/**","/addEndereco", "/setup", "/img/**", "/css/**", "/css", "/backoffice/setup", "/", "/produto", "/login", "/cadastro", "/cadastro/**","/sair", "/carrinho", "/item", "/item/**", "/itemreduzir", "/remover","/pedidos", "/pedidos/**", "/comprar").permitAll();
 
-                    //Administrador e estoquista
-                    registry.requestMatchers("/backoffice/", "/backoffice/pedidos",
-                            "/backoffice/pedidos/**").hasAnyRole("Administrador", "Estoquista");
+                    /* Administrador e Estoquista */
+                    registry.requestMatchers("/backoffice/", "/backoffice/pedidos", "/backoffice/pedidos/**").hasAnyRole("Administrador", "Estoquista");
 
-                    // estoquista nao acessa backoffice-listar produtos
+                    /* Estoquista ---> NÃO PODE ACESSAR /backoffice/listar-produtos */
                     registry.requestMatchers("/backoffice/usuarios").hasRole("Administrador");
 
                     registry.anyRequest().authenticated();
-
                 })
                 .formLogin(httpSecurityFormLoginConfigurer -> {
                     httpSecurityFormLoginConfigurer
@@ -55,16 +50,12 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/backoffice")
                         .logoutUrl("/logout")
                         .permitAll())
-
                 .build();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
         return myUserRepository;
-    }
-    @Bean public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -73,6 +64,11 @@ public class SecurityConfig {
         provider.setUserDetailsService(myUserRepository);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
