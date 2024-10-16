@@ -1,13 +1,12 @@
 package com.example.iOutra.controller.store;
 
-import java.math.BigDecimal;
-import java.util.Random;
 
 import com.example.iOutra.model.Frete;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
+import java.math.BigDecimal;
+import java.util.Random;
 
 @Configuration
 public class FreteConfig {
@@ -27,7 +26,7 @@ public class FreteConfig {
     public Frete freteExpresso() {
         return new Frete(valor, "Expresso", valor, 3);
     }
-
+    
 
     @Bean
     public Frete freteEconomico() {

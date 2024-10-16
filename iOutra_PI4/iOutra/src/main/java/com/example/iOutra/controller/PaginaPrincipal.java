@@ -1,6 +1,10 @@
 package com.example.iOutra.controller;
 
 
+import com.example.iOutra.model.Carrinho;
+import com.example.iOutra.model.Client;
+import com.example.iOutra.model.ClientDTO;
+import com.example.iOutra.model.Produto;
 import com.example.iOutra.repository.ClientRepository;
 import com.example.iOutra.service.ClientService;
 import com.example.iOutra.service.ProdutoService;
@@ -9,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import com.example.iOutra.model.*;
-import java.util.Optional;
 
+import java.util.Optional;
 
 @Controller
 @RequestMapping("")
@@ -66,7 +69,7 @@ public class PaginaPrincipal {
         session.setAttribute("UsuarioLogado", client.getEmail());
 
         Carrinho carrinho = (Carrinho) session.getAttribute("carrinho");
-
+        
         if (valido && carrinho.getItens().size() > 0) {
             return "redirect:/carrinho";
         } else if (valido) {

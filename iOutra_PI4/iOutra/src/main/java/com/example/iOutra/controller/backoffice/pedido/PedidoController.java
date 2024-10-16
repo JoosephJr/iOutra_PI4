@@ -1,5 +1,6 @@
 package com.example.iOutra.controller.backoffice.pedido;
 
+
 import com.example.iOutra.controller.backoffice.Utils;
 import com.example.iOutra.model.Pedido;
 import com.example.iOutra.repository.PedidoRepository;
@@ -23,12 +24,12 @@ public class PedidoController {
 
     @Autowired
     private Utils utils;
-
+    
     @GetMapping("/pedidos")
     public String listarPedidos(Model model, Authentication authentication){
 
-        // Adiciona a lista de usuários ao modelo para exibição na página.
-        model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
+         // Adiciona a lista de usuários ao modelo para exibição na página.
+         model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
 
         List<Pedido> pedidos = pedidoRepository.findAllByOrderByDataPedidoDesc();
 
@@ -37,14 +38,14 @@ public class PedidoController {
         return "backoffice/pedido/lista_pedidos";
     }
 
-    @PostMapping("/pedidos/editarStatus")
+   @PostMapping("/pedidos/editarStatus")
     public String editarStatusPedido(@RequestParam Long pedidoId, @RequestParam String status) {
-
+        
         Pedido pedido = pedidoRepository.findById(pedidoId).orElseThrow();
 
         if (pedido != null) {
             pedido.setStatus(status);;
-            pedidoRepository.save(pedido);
+            pedidoRepository.save(pedido); 
         }
         return "redirect:/backoffice/pedidos";
     }

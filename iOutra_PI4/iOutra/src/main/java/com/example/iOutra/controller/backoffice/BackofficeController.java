@@ -1,5 +1,6 @@
 package com.example.iOutra.controller.backoffice;
 
+
 import com.example.iOutra.model.Usuario;
 import com.example.iOutra.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 
 @Controller
 @RequestMapping("backoffice")
@@ -22,7 +24,7 @@ public class BackofficeController {
 
     @Autowired
     private Utils utils;
-
+//ao executar o programa pela primeira vez, acesse o localhost/backoffice/setup para disparar o codigo e criar o admin root
     @GetMapping("setup")
     public String cadastrarUsuario() {
 
@@ -37,14 +39,12 @@ public class BackofficeController {
         usuario.setFullname("admin");
         usuario.setCpf("99999999999");
         usuario.setPassword(passwordEncoder.encode("admin"));
-        usuario.setRole("Administrador");
+        usuario.setRole("ROLE_ADMIN");
         usuario.setActive(true);
-
         repository.save(usuario);
-
+        System.out.println("Usuário admin@root.com criado com sucesso!");
         return "redirect:/backoffice/login";
     }
-
     @GetMapping("")
     public String handleBackofficeLogin(Usuario usuario) {
         return "backoffice/login";
@@ -56,6 +56,3 @@ public class BackofficeController {
         return "backoffice/home";
     }
 }
-
-
-

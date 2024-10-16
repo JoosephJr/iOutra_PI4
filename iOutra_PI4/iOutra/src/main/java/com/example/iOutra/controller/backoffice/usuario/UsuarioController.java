@@ -1,9 +1,12 @@
 package com.example.iOutra.controller.backoffice.usuario;
 
-import java.util.List;
 
 import com.example.iOutra.controller.backoffice.Utils;
+import com.example.iOutra.model.Usuario;
+import com.example.iOutra.repository.UsuarioRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -11,10 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.iOutra.model.Usuario;
-import com.example.iOutra.repository.UsuarioRepository;
-
-import jakarta.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping("backoffice")
@@ -30,6 +30,12 @@ public class UsuarioController {
     private Utils utils;
 
     // USUARIOS REST - GET / POST / PUT / DELETE
+
+
+@GetMapping("usuarios/login")
+public String handleBackofficeLogin(Usuario usuario) {
+    return "backoffice/login";
+}
 
     @GetMapping("usuarios")
     public String listarUsuarios(Model model, Authentication authentication) {
@@ -47,7 +53,7 @@ public class UsuarioController {
 
     @GetMapping("procurar")
     public String procurar(Model model, @RequestParam(name = "fullname", required = false) String fullname,
-                           Authentication authentication) {
+            Authentication authentication) {
 
         List<Usuario> usuarios = repository.findByFullnameContainingIgnoreCase(fullname);
 
@@ -64,7 +70,7 @@ public class UsuarioController {
         repository.save(usuario);
         return "redirect:/backoffice/usuarios";
     }
-
+      
     @GetMapping("usuarios/cadastro")
     public String cadastrar(Usuario usuario, Model model, Authentication authentication) {
         model.addAttribute("usuarioAutenticado", utils.getUsuarioAutenticado(authentication));
