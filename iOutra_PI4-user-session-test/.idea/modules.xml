@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/iOutra_PI4-user-session-test.iml" filepath="$PROJECT_DIR$/.idea/iOutra_PI4-user-session-test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/iOutra_PI4.iml" filepath="$PROJECT_DIR$/.idea/iOutra_PI4.iml" />
     </modules>
   </component>
 </project>

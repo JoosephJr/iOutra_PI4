@@ -1,0 +1,244 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    height: 100%;
+}
+
+/* Cor de fundo */
+#grad1 {
+    background-color: #A67C52; /* Marrom terroso */
+    background-image: linear-gradient(120deg, #8E6C49, #C0A383); /* Gradiente suave */
+}
+
+/* Estilos do formulário */
+#msform {
+    text-align: center;
+    position: relative;
+    margin-top: 20px;
+}
+
+#msform fieldset .form-card {
+    background: #F5F5DC; /* Bege claro */
+    border: 0 none;
+    border-radius: 0px;
+    box-shadow: 0 2px 2px 2px rgba(76, 47, 39, 0.2); /* Sombra suave em tom marrom */
+    padding: 20px 40px 30px 40px;
+    box-sizing: border-box;
+    width: 94%;
+    margin: 0 3% 20px 3%;
+    position: relative;
+}
+
+#msform fieldset {
+    background: #F5F5DC; /* Bege */
+    border: 0 none;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding-bottom: 20px;
+    position: relative;
+}
+
+/* Esconde todos os fieldsets, exceto o primeiro */
+#msform fieldset:not(:first-of-type) {
+    display: none;
+}
+
+#msform fieldset .form-card {
+    text-align: left;
+    color: #6B4226; /* Marrom suave para texto */
+}
+
+#msform input, #msform textarea {
+    padding: 0px 8px 4px 8px;
+    border: none;
+    border-bottom: 1px solid #A67C52; /* Borda marrom claro */
+    border-radius: 0px;
+    margin-bottom: 25px;
+    margin-top: 2px;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: Montserrat, sans-serif;
+    color: #3B3A30; /* Marrom escuro para texto */
+    font-size: 16px;
+    letter-spacing: 1px;
+}
+
+#msform input:focus, #msform textarea:focus {
+    box-shadow: none !important;
+    border: none;
+    font-weight: bold;
+    border-bottom: 2px solid #8B4513; /* Marrom escuro */
+    outline-width: 0;
+}
+
+/* Botões com cor terrosa */
+#msform .action-button {
+    width: 100px;
+    background: #8B4513; /* Marrom escuro */
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px;
+}
+
+#msform .action-button:hover, #msform .action-button:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #8B4513;
+}
+
+/* Botão anterior */
+#msform .action-button-previous {
+    width: 100px;
+    background: #6B4226; /* Marrom médio */
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px;
+}
+
+#msform .action-button-previous:hover, #msform .action-button-previous:focus {
+    box-shadow: 0 0 0 2px white, 0 0 0 3px #6B4226;
+}
+
+/* Lista suspensa (dropdown) */
+select.list-dt {
+    border: none;
+    outline: 0;
+    border-bottom: 1px solid #8B4513; /* Marrom escuro */
+    padding: 2px 5px 3px 5px;
+    margin: 2px;
+}
+
+select.list-dt:focus {
+    border-bottom: 2px solid #6B4226; /* Marrom médio */
+}
+
+/* Cartão de fundo */
+.card {
+    z-index: 0;
+    border: none;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+/* Títulos dos fieldsets */
+.fs-title {
+    font-size: 25px;
+    color: #3B3A30; /* Marrom escuro */
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: left;
+}
+
+/* Barra de progresso */
+#progressbar {
+    margin-bottom: 30px;
+    overflow: hidden;
+    color: lightgrey;
+}
+
+#progressbar .active {
+    color: #3B3A30; /* Marrom escuro */
+}
+
+#progressbar li {
+    list-style-type: none;
+    font-size: 12px;
+    width: 25%;
+    float: left;
+    position: relative;
+}
+
+/* Ícones na barra de progresso */
+#progressbar #account:before {
+    font-family: FontAwesome;
+    content: "\f023";
+}
+
+#progressbar #personal:before {
+    font-family: FontAwesome;
+    content: "\f007";
+}
+
+#progressbar #payment:before {
+    font-family: FontAwesome;
+    content: "\f09d";
+}
+
+#progressbar #confirm:before {
+    font-family: FontAwesome;
+    content: "\f00c";
+}
+
+/* Barra de progresso antes de qualquer progresso */
+#progressbar li:before {
+    width: 50px;
+    height: 50px;
+    line-height: 45px;
+    display: block;
+    font-size: 18px;
+    color: #ffffff;
+    background: #A67C52; /* Marrom claro */
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    padding: 2px;
+}
+
+/* Conectores da barra de progresso */
+#progressbar li:after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: #A67C52; /* Marrom claro */
+    position: absolute;
+    left: 0;
+    top: 25px;
+    z-index: -1;
+}
+
+/* Número e conector do passo da barra de progresso */
+#progressbar li.active:before, #progressbar li.active:after {
+    background: #8B4513; /* Marrom escuro */
+}
+
+/* Botões de rádio estilizados */
+.radio-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.radio {
+    display: inline-block;
+    width: 204px;
+    height: 104px;
+    border-radius: 0;
+    background: #A67C52; /* Bege claro */
+    box-shadow: 0 2px 2px 2px rgba(76, 47, 39, 0.2);
+    box-sizing: border-box;
+    cursor: pointer;
+    margin: 8px 2px;
+}
+
+.radio:hover {
+    box-shadow: 2px 2px 2px 2px rgba(76, 47, 39, 0.3);
+}
+
+.radio.selected {
+    box-shadow: 1px 1px 2px 2px rgba(76, 47, 39, 0.1);
+}
+
+/* Ajuste de imagem no div */
+.fit-image {
+    width: 100%;
+    object-fit: cover;
+}
