@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOTRA - backoffice usuario form</title>
+    <link rel="icon" type="image/x-icon" href="/static/css/img/logo.svg">
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body>
+    <div th:insert="fragments/header.html :: adm-header"></div>
+
+    <div class="container-fluid bg-success-subtle" style="margin-top: 70px;">
+        <div class="row" style="gap: 10px;">
+
+            <main class="col-md shadow-lg" style="width: 600px">
+                <div class="container vh-100" style="width: 600px; margin-left: auto; margin-right: auto;">
+                    <form
+                        th:action="${usuario.id != null} ? @{/backoffice/usuario/edita} : @{/backoffice/usuario/cadastra}"
+                        th:method="post" th:object="${usuario}" onsubmit="return validatePassword()"
+                        class="needs-validation" novalidate>
+
+                        <h3 class="h3 my-3 text-center">Usuário</h3>
+
+                        <!-- ID -->
+                        <div th:if="${usuario.id != null}">
+                            <input type="hidden" th:field="*{id}" readonly>
+                        </div>
+
+                        <!-- Nome completo -->
+                        <div class="row mb-3">
+                            <label for="nome" class="col-sm-4 col-form-labe">Nome completo:</label>
+                            <div class="col-sm-8">
+                            <input type="text" th:field="*{fullname}" class="form-control" required>
+                            <span th:errors="*{fullname}" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- CPF -->
+                        <div class="row mb-3">
+                            <label for="cpf" class="col-sm-4 col-form-labe">CPF:</label>
+                            <div class="col-sm-8">
+                            <input type="number" onKeyPress="if(this.value.length==11) return false;" th:field="*{cpf}"
+                                class="form-control" required>
+                            <span th:errors="*{cpf}" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="row mb-3">
+                            <label for="email" class="col-sm-4 col-form-labe">Email:</label>
+                            <div class="col-sm-8">
+                            <input type="email" th:field="*{email}" th:readonly="${usuario.id != null}"
+                                class="form-control" required>
+                            <span th:errors="*{email}" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Senha -->
+                        <div class="row mb-3">
+                            <label for="password" class="col-sm-4 col-form-labe">Senha:</label>
+                            <div class="col-sm-8">
+                            <input type="password" th:field="*{password}"
+                                th:minlength="${usuario.id == null ? 4 : null}"
+                                th:placeholder="${usuario.id != null} ? '*******'" th:required="${usuario.id == null}"
+                                class="form-control">
+                            <span th:errors="*{password}" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        <!-- Confirmar senha -->
+                        <div class="row mb-3">
+                            <label for="confirmPassword" class="col-sm-4 col-form-labe">Confirmar senha:</label>
+                            <div class="col-sm-8">
+                            <input type="password" id="confirmPassword" th:minlength="${usuario.id == null ? 4 : null}"
+                                th:placeholder="${usuario.id != null} ? '*******'" th:required="${usuario.id == null}"
+                                class="form-control">
+                            <br>
+                            </div>
+                        </div>
+
+
+                        <!-- Função do usuário -->
+                        <div class="mb-3">
+                            <label for="grupo" class="form-label">Tipo de Usuário:</label>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" th:field="*{role}" value="Administrador"
+                                    checked>
+                                <label for="adminRadio" class="form-check-label">Administrador</label>
+                                <br>
+                                <input type="radio" class="form-check-input" th:field="*{role}" value="Estoquista">
+                                <label for="estoqRadio" class="form-check-label">Estoquista</label>
+                                <br>
+                                <span th:errors="*{role}" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Habilitar e Desabilitar -->
+                        <div th:if="${usuario.id != null}">
+                            <input type="hidden" th:field="*{active}" value="${usuario.active}">
+                        </div>
+
+                        <span th:errors="*{active}" class="text-danger"></span>
+                        <br>
+                        <div class="mb-3 text-center">
+                            <button class="btn btn-success btn-lg">Salvar</button>
+                        </div>
+
+                    </form>
+                </div>
+            </main>
+        </div>
+
+        <div th:replace="fragments/fooster.html :: adm-fooster"></div>
+
+</body>
+
+<script>
+    function validatePassword() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+
+        if (password !== confirmPassword) {
+            alert("As senhas não coincidem.");
+            return false;
+        }
+        return true;
+    }
+</script>
+
+</html>

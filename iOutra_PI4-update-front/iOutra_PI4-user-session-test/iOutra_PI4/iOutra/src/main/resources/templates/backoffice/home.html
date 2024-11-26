@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yotra - backoffice</title>
+    <link rel="icon" type="image/x-icon" href="/img/icons/logo.svg">
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body class="bg-success-subtle">
+
+    <div th:insert="fragments/header.html :: adm-header"></div>
+
+    <div class="container-fluid bg-success-subtle text-center" style="margin-top: 70px;">
+        <h2 class="text-center">Bem vindo ao backoffice da Yotra!</h2>
+
+    </div>
+    <!--
+    <div th:replace="fragments/fooster.html :: adm-fooster"></div>
+    -->
+</body>
+
+</html>
