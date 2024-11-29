@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yotra - Cadastro de Produto</title>
+    <link rel="icon" type="image/x-icon" href="/img/icons/logo.svg">
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body>
+    <div th:insert="fragments/header.html :: adm-header"></div>
+
+    <div class="container-fluid" style="margin-top: 50px;">
+        <div class="row">
+
+            <main class="bg-success-subtle col-md shadow-lg">
+                <div class="container" style="max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <form
+                        th:action="${produto.id != null} ? @{/backoffice/produto/edita} : @{/backoffice/produto/cadastra}"
+                        th:method="post" th:object="${produto}" class="needs-validation" enctype="multipart/form-data">
+
+                        <h3 class="h3 my-3">Formulário - Produto</h3>
+
+                        <!-- ID -->
+                        <div th:if="${produto.id != null}">
+                            <input type="hidden" th:field="*{id}" readonly>
+                        </div>
+
+                        <!-- Nome do produto -->
+                        <div class="row-mb-3">
+                            <label for="nome" class="col-sm-4 col-form-label">Nome:</label>
+                            <div class="col-sm-8">
+                            <input type="text" th:field="*{name}" minlength="3" maxlength="200" class="form-control"
+                                >
+                            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                            <!-- Preço -->
+                            <div class="row-mb-3">
+                                <label for="preco" class="col-sm-4 col-form-label">Preço:</label>
+                                <div class="col-sm-8">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark text-light">R$</span>
+                                    <input type="number" th:field="*{price}" class="form-control"
+                                        >
+                                </div>
+                                <span th:errors="*{price}" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Quantidade -->
+                            <div class="col-md mb-3">
+                                <label for="quantidade" class="col-sm-4 col-form-label">Quantidade:</label>
+                                <div class="col-sm-8">
+                                <input type="number" min="0" th:field="*{stockQuantity}" class="form-control">
+                                <span th:errors="*{stockQuantity}" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Avaliação -->
+                            <div class="col-md mb-3">
+                                <label for="avaliacao" class="col-sm-4 col-form-label">Avaliação:</label>
+                                <div class="col-sm-8">
+                                <select id="ratingSelect" th:field="*{rating}" class="form-select" >
+                                    <option value="5.0">5.0</option>
+                                    <option value="4.5">4.5</option>
+                                    <option value="4.0">4.0</option>
+                                    <option value="3.5">3.5</option>
+                                    <option value="3.0">3.0</option>
+                                    <option value="2.5">2.5</option>
+                                    <option value="2.0">2.0</option>
+                                    <option value="1.5">1.5</option>
+                                    <option value="1.0">1.0</option>
+                                    <option value="0.5">0.5</option>
+                                </select>
+                                <script th:inline="javascript">
+                                    /*<![CDATA[*/
+                                    var ratingValue = /*[[${produto.rating}]]*/ null;
+                                    if (ratingValue !== null) {
+                                        document.getElementById("rating").value = ratingValue.toString();
+                                    }
+                                    /*]]>*/
+                                </script>
+                                <span th:errors="*{rating}" class="text-danger"></span>
+                                </div>
+                            </div>
+
+
+                        <!-- Descrição -->
+                        <div class="row-mb-3">
+                            <label for="descricao" class="col-sm-4 col-form-label">Descrição:</label>
+                            <div class="col-sm-8">
+                            <textarea th:field="*{description}" maxlength="2000" class="form-control"
+                                ></textarea>
+                            <span th:errors="*{description}" class="text-danger"></span>
+
+                            </div>
+                        </div>
+
+
+                        <button class="btn btn-success mt-3" type="button" id="btnNovaImagem">Adicionar imagem</button>
+
+                        <div class="overflow-auto  d-flex pt-4" style="height: 180px; max-height: 180px">
+                            <div class="row flex-nowrap p-1" id="inputImagem" style="height:180px; max-height: 180px">
+                                <fieldset class="col-md-15 card mx-2 "
+                                    style="width: 100px;"
+                                    th:each="imagem, iterStat   : *{imagens}">
+                                    <img class="card-img-top" th:id="'selectedImage' + ${iterStat.index}"
+                                        th:onclick="'document.getElementById(\'incluirImagem' + ${iterStat.index} + '\').click()'"
+                                        th:src="'/img/produtos/' + ${imagem.nomeArquivo}"
+                                        style="width: 100px; height: 100px; max-height:100px; cursor: pointer;" />
+
+                                    <input th:id="'incluirImagem' + ${iterStat.index}" type="file"
+                                        th:field="*{imagens[__${iterStat.index}__].arquivo}" class="form d-none"
+                                        th:attr="onchange=|displaySelectedImage(event, `selectedImage${iterStat.index}`)|"
+                                        accept="image/*"  />
+
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center" style="gap: 20px;">
+                                            <label for="principal${iterStat.index}">Principal</label>
+                                            <input type="checkbox" th:field="*{imagens[__${iterStat.index}__].principal}"  />
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <button class="btn btn-danger delete-button" type="button"
+                                                th:attr="data-image-id=${imagem.id}">Deletar</button>
+                                                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                                    </div>
+                                </fieldset>
+                            </div>
+
+                        </div>
+
+                        <div class="row mt-4" style="margin-left: -250px">
+                            <div class="offset-sm-4 col-sm-4 d-grid">
+                                <a href="/backoffice/produtos" class="btn btn-secondary btn-lg">Voltar</a>
+                            </div>
+                            <div class="col-sm-4 d-grid">
+                                <button class="btn btn-success btn-lg">Salvar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+
+        <script src="/js/formProduto.js"></script>
+
+</body>
+
+
+</html>

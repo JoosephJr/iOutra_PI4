@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/img/icons/logo.svg">>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pagamento</title>
+    <th:insert th:insert="fragments/bootstrap.html :: bootstrap"></th:insert>
+</head>
+
+<body class="bg-success-subtle">
+    <div th:replace="fragments/store/header.html :: loja-header"></div>
+    <div class="container" style="margin-top: 100px;">
+        <div class="row" style="gap: 10px;">
+
+            <div class="col bg-white border p-2">
+                <div class="container">
+
+                    <div class="row mt-3">
+
+                        <table class="table table-bordered text-center ">
+                            <thead class="thead-light">
+                            <tr class="table-dark">
+                                <th>Imagem</th>
+                                <th>Produto</th>
+                                <th>Valor unitário</th>
+                                <th>Quantidade</th>
+                                <th>Preço total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${session.carrinho.itens}" class="border border-left rounded my-2 bg-light p-3">
+                                <td>
+                                    <img th:src="${'/img/produtos/' + item.imagem}" class="img-fluid" style="width: 150px;">
+                                </td>
+                                <td class="align-middle">
+                                    <label th:text="${item.produto.name}"></label>
+                                </td>
+                                <td class="align-middle">
+                                    <label th:text="'R$ ' + ${item.produto.price}"></label>
+                                </td>
+                                <td class="align-middle">
+                                    <label th:text="${item.quantidade}"></label>
+                                </td>
+                                <td class="align-middle">
+                                    <label th:text="'R$ ' + ${item.total}"></label>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                <div class="row">
+                    <div class="col">
+
+                    </div>
+                    <div class="container">
+                        <div class="d-flex justify-content-between">
+                            <label for="" th:text="'Valor dos Produtos: '"></label>
+                            <label for="" th:text="'R$' + ${session.carrinho.total}"></label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <label for="" th:text="'Valor do Frete:'"></label>
+                            <label id="freteValue" for="" th:text="'R$ 0'"></label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <label for="" th:text="'Valor total: '"></label>
+                            <label id="totalAPrazo" for="" th:text="'R$' + ${session.carrinho.total}"></label>
+                        </div>
+
+                        <div class="text-end">
+                            <label th:if="${session.carrinho.total != null}"
+                                th:text="'(em até 10x de R$ ' + ${session.carrinho.total / 10} + ' sem juros)'"></label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <label for="" th:text="'Total à vista no boleto: '"></label>
+                            <label id="totalAVista" for=""
+                                th:text="'R$' + ${#numbers.formatDecimal(session.carrinho.total, 0, 'COMMA', 2, 'POINT')}"></label>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            </div>
+            <!-- INFORMAÇÕES DA ENTREGA -->
+            <div class="col bg-white border p-2" th:unless="${session.client == null}">
+                <div class="container">
+                <h4 class="text-center">Endereço e pagamento:</h4>
+                <input type="text" hidden id="idEnderecoPrincipal" name="idEnderecoPrincipal" th:value="${session.entrega.id}">
+                <h5  class="text-dark text-center" id="enderecoPrincipal" th:text="${session.entrega.street} + ', ' + ${session.entrega.number} +' / ' + ${session.entrega.state} + ' ' + ${session.entrega.zipCode}"></h5>
+
+                        <div class="list-group">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr class="align-middle" th:each="frete : ${session.frete}">
+                                            <td>
+                                                <input type="radio" th:value="${frete.id}" name="freteradio" th:checked="${frete.id == session.selectedFreteId}">
+                                            </td>
+                                            <td th:text="${frete.tipoEntrega}" class="ml-2"></td>
+                                            <td>
+                                                <span class="badge badge-primary badge-pill">
+                                                    <label class="text-success h6" th:text="'R$ ' + ${#numbers.formatDecimal(frete.valor,  0, 'COMMA', 2, 'POINT')}"></label>
+                                                </span>
+                                            </td>
+                                            <td th:text="'Chegará em ' + ${frete.dias} + ' dias'" class="ml-2"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#enderecoModal">Selecionar outro endereço</button>
+                        </div>
+
+                </div>
+
+
+                <!-- Modal -->
+                <div class="modal fade" id="enderecoModal" tabindex="-1" aria-labelledby="enderecoModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="enderecoModalLabel">Escolha um endereço</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="enderecoForm">
+                                    <!-- Loop through delivery addresses -->
+                                    <th:block th:each="endereco : ${session.client.deliveryAddresses}">
+                                        <div class="mb-3 endereco-item">
+                                            <!-- Opção de seleção de rádio -->
+                                            <input type="radio" name="endereco" th:value="${endereco.id}" />
+                                            <!-- id -->
+                                            <label class="form-label id" th:text="${endereco.id}" hidden></label>
+                                            <!-- Rua -->
+                                            <label class="form-label endereco"
+                                                th:text="${endereco.street}"></label>
+                                            <!-- Número -->
+                                            <label class="form-label numero"
+                                                th:text="${endereco.number}"></label>
+
+                                                <!-- UF -->
+                                            <label class="form-label uf"
+                                            th:text="${endereco.state}"></label>
+
+                                            <!-- CEP -->
+                                            <label class="form-label cep" th:text="${endereco.zipCode}"></label>
+                                            <!-- Complemento -->
+                                            <label class="form-label complemento"
+                                                th:text="${endereco.complement}"></label>
+                                        </div>
+                                    </th:block>
+                                </form>
+                                <div id="camposEnderecoExtra" style="display: none;">
+                                    <!-- Modelo para campos de endereço extra -->
+                                    <div class="mb-3 endereco-item">
+                                        <form action="/pagamento/addEndereco" th:method="post">
+                                            <input type="number" class="form-control" placeholder="CEP"
+                                                id="novoCEP" name="novoCEP" oninput="verificarCEP(this.value)">
+                                            <input type="text" class="form-control" placeholder="Logradouro"
+                                                id="novoLogradouro" name="novoLogradouro" required>
+                                            <input type="text" class="form-control" placeholder="Número"
+                                                id="novoNumero" name="novoNumero" required>
+                                            <input type="text" class="form-control" placeholder="Complemento"
+                                                id="novoComplemento" name="novoComplemento">
+                                            <input type="text" class="form-control" placeholder="Bairro"
+                                                id="novoBairro" name="novoBairro">
+                                            <input type="text" class="form-control" placeholder="Cidade"
+                                                id="novoCidade" name="novoCidade">
+                                            <input type="text" class="form-control" placeholder="UF" id="novoUF"
+                                                name="novoUF">
+                                            <button class="btn btn-success">Salvar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <button class="btn btn-info" onclick="adicionarCampoEndereco()">Adicionar outro
+                                    endereço</button>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Fechar</button>
+                                <button type="button" class="btn btn-primary"
+                                    onclick="selecionarEndereco()">Selecionar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="metodoPagamento" id="boletoRadio" value="Boleto Bancário"
+                           onchange="mostrarInfoPagamento()">
+                    <label class="form-check-label" for="boletoRadio">
+                        Boleto Bancário
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="metodoPagamento" id="pixRadio" value="PIX"
+                           onchange="mostrarInfoPagamento()">
+                    <label class="form-check-label" for="pixRadio">
+                        PIX
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="metodoPagamento" id="cartaoRadio" value="Cartão de Crédito"
+                           onchange="mostrarInfoPagamento()">
+                    <label class="form-check-label" for="cartaoRadio">
+                        Cartão de Crédito
+                    </label>
+                </div>
+
+                <!-- Informações do Boleto -->
+                <div class="info-pagamento d-none mt-3" id="infoBoleto">
+                    <h5>Informações do Boleto</h5>
+                    <p>Copie o código do boleto:
+                        <br>
+                        23792.37205 90342.200764 97003.432701 5 98630000021400</p>
+                    <h3 id="totalAVistaPedido" th:text="'Valor Total (Desconto Boleto) ' + 'R$' + ${#numbers.formatDecimal(session.carrinho.total * 0.95, 0, 'COMMA', 2, 'POINT')}"></h3>
+                </div>
+
+                <!-- Informações do PIX -->
+                <div class="info-pagamento d-none mt-3" id="infoPix">
+                    <h5>PIX</h5>
+                    <p>Copie o código PIX:
+                        <br>
+                        00020126580014BR.GOV.BCB.PIX0136d0cfe2f5-ac74-4d02-848e-2072c6ba3d465204000053039865406200.005802BR59256009SAO PAULO61080540900062240520szoNJQiZVGI8FIXelhmp6304D7B8</p>
+                    <h3 id="totalAVistaPix" th:text="'Valor Total (Desconto PIX) ' + 'R$' + ${#numbers.formatDecimal(session.carrinho.total * 0.95, 0, 'COMMA', 2, 'POINT')}"></h3>
+                </div>
+
+
+                <!-- Informações do Cartão de Crédito -->
+                <div class="info-pagamento d-none mt-3" id="infoCartao">
+                    <h5>Informações do Cartão de Crédito</h5>
+                    <div class="form-group">
+                        <label for="numeroCartao">Número do Cartão:</label>
+                        <input type="tel" maxlength="16" class="form-control" id="numeroCartao" name="numeroCartao" oninput="mascaraNumeros(this)">
+                    </div>
+                    <div class="form-group">
+                        <label for="nomeTitular">Nome do Titular:</label>
+                        <input type="text" class="form-control" id="nomeTitular" name="nomeTitular">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="dataValidade">Data de Validade:</label>
+                            <input type="tel" maxlength="4" class="form-control" id="dataValidade" name="dataValidade"
+                                   placeholder="MM/AA">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="cvv">Código de Verificação:</label>
+                            <input type="text" class="form-control" id="cvv" name="cvv" placeholder="CVV">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="parcelas">Parcelas:</label>
+                        <select class="form-control" id="parcelas" name="parcelas">
+                            <option value="1" th:text="'1x R$ ' + ${#numbers.formatDecimal(session.carrinho.total, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="2" th:text="'2x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 2, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="3" th:text="'3x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 3, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="4" th:text="'4x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 4, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="5" th:text="'5x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 5, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="6" th:text="'6x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 6, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="7" th:text="'7x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 7, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="8" th:text="'8x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 8, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="9" th:text="'9x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 9, 0, 'COMMA', 2, 'POINT')}"></option>
+                            <option value="10" th:text="'10x R$ ' + ${#numbers.formatDecimal(session.carrinho.total / 10, 0, 'COMMA', 2, 'POINT')}"></option>
+                        </select>
+
+                    </div>
+            </div>
+
+                <form action="/pagamento/concluir-pedido" th:method="post" onsubmit="return validarFinalizarCompra()">
+                    <!-- Input oculto para armazenar o ID do endereço principal -->
+                    <input type="hidden" id="idEnderecoPrincipal" name="idEnderecoPrincipal" th:value="${session.entrega.id}">
+
+                    <!-- Input oculto para armazenar o valor do frete -->
+                    <input type="hidden" id="valorFrete" name="valorFrete">
+
+                    <!-- Input oculto para armazenar a forma de pagamento -->
+                    <input type="hidden" id="formaPagamento" name="formaPagamento">
+
+                    <!-- Botão para finalizar a compra -->
+                    <div class="text-center">
+                        <button class="btn btn-success" href="/" type="submit">Concluir pedido</button>
+                    </div>
+
+                </form>
+        </div>
+        </div>
+    </div>
+
+    </div>
+    <script>
+        function mascaraNumeros(input) {
+            // Remove tudo o que não for número
+            input.value = input.value.replace(/\D/g, '');
+        }
+
+
+        function verificarCEP(cep) {
+                    // Verifica se o CEP possui 8 dígitos
+                    if (cep.length >7 && cep.length < 10) {
+
+                        preencherEnderecoViaCEP();
+                    }
+                }
+                function adicionarCampoEndereco() {
+                    var camposEnderecoExtra = document.getElementById('camposEnderecoExtra');
+                    var novoCampoEndereco = camposEnderecoExtra.querySelector('.endereco-item').cloneNode(true);
+                    camposEnderecoExtra.style.display = 'block'; // Mostrar os campos de endereço extra
+                }
+
+                function preencherEnderecoViaCEP() {
+
+        // Obtém o valor do campo de CEP
+        const cepValue = document.getElementById('novoCEP').value;
+
+        // Faz a requisição para o ViaCEP
+        fetch(`https://viacep.com.br/ws/${cepValue}/json/`)
+            .then(response => {
+
+                // Verifica se a resposta da requisição foi bem-sucedida
+                if (!response.ok) {
+                    throw new Error('CEP não encontrado.');
+                }
+
+                // Converte a resposta para JSON
+                return response.json();
+            })
+            .then(data => {
+
+                // Preenche os campos do endereço com os dados retornados
+                document.getElementById('novoLogradouro').value = data.logradouro;
+                document.getElementById('novoComplemento').value = data.complemento;
+                document.getElementById('novoBairro').value = data.bairro;
+                document.getElementById('novoCidade').value = data.localidade;
+                document.getElementById('novoUF').value = data.uf;
+            })
+            .catch(error => {
+                // Se houver algum erro na requisição, exibe uma mensagem de erro
+
+                console.error('Erro ao obter detalhes do endereço:', error.message);
+            });
+        }
+
+
+
+                function mostrarInfoPagamento() {
+                    var radios = document.getElementsByName('metodoPagamento');
+                    var infoBoleto = document.getElementById("infoBoleto");
+                    var infoCartao = document.getElementById("infoCartao");
+                    var infoPix = document.getElementById("infoPix");
+
+                    for (var i = 0; i < radios.length; i++) {
+                        if (radios[i].checked) {
+                            var valorSelecionado = radios[i].value;
+
+                            if (valorSelecionado === 'Boleto Bancário') {
+                                infoBoleto.classList.remove('d-none');
+                                infoCartao.classList.add('d-none');
+                                infoPix.classList.add('d-none');
+
+                            } else if (valorSelecionado === 'PIX') {
+                                infoBoleto.classList.add('d-none');
+                                infoCartao.classList.add('d-none');
+                                infoPix.classList.remove('d-none');
+                            } else if (valorSelecionado === 'Cartão de Crédito') {
+                                infoBoleto.classList.add('d-none');
+                                infoCartao.classList.remove('d-none');
+                                infoPix.classList.add('d-none');
+
+                            }
+                        }
+                    }
+                }
+
+                function adicionarCampoEndereco() {
+                    var camposEnderecoExtra = document.getElementById('camposEnderecoExtra');
+                    var novoCampoEndereco = camposEnderecoExtra.querySelector('.endereco-item').cloneNode(true);
+                    camposEnderecoExtra.style.display = 'block'; // Mostrar os campos de endereço extra
+                }
+
+                function selecionarEndereco() {
+
+                    var enderecoSelecionado = document.querySelector('input[name="endereco"]:checked');
+                    if (enderecoSelecionado) {
+                        var endereco = enderecoSelecionado.closest('.endereco-item');
+
+                        // Atualize as informações de endereço na página principal
+
+                        document.getElementById("idEnderecoPrincipal").innerText = endereco.querySelector('.id').innerText;
+                        document.getElementById("enderecoPrincipal").innerText = endereco.querySelector('.endereco').innerText + ", "
+                                                                                + endereco.querySelector('.numero').innerText + " / "
+                                                                                + endereco.querySelector('.uf').innerText + " "
+                                                                                + endereco.querySelector('.cep').innerText;
+                        // Feche o modal
+                        var myModalEl = document.getElementById('enderecoModal');
+                        var modal = bootstrap.Modal.getInstance(myModalEl);
+                        modal.hide();
+
+                    } else {
+                        alert("Por favor, selecione um endereço.");
+                    }
+                }
+
+                function validarFinalizarCompra() {
+
+
+            // Verifica se algum frete foi selecionado
+            var freteSelecionado = document.querySelector('input[name="freteradio"]:checked');
+            if (!freteSelecionado) {
+                alert("Por favor, selecione um frete antes de finalizar a compra.");
+                return false; // Impede o envio do formulário
+            }
+
+            // Verifica se um método de pagamento foi selecionado
+            var metodoPagamentoSelecionado = document.querySelector('input[name="metodoPagamento"]:checked');
+            if (!metodoPagamentoSelecionado) {
+                alert("Por favor, selecione um método de pagamento antes de finalizar a compra.");
+                return false; // Impede o envio do formulário
+            }
+
+            // Se o método de pagamento selecionado for cartão de crédito, verifica se todas as informações do cartão foram preenchidas
+            if (metodoPagamentoSelecionado.value === 'Cartão de Crédito') {
+                var numeroCartao = document.getElementById('numeroCartao').value.trim();
+                var nomeTitular = document.getElementById('nomeTitular').value.trim();
+                var dataValidade = document.getElementById('dataValidade').value.trim();
+                var cvv = document.getElementById('cvv').value.trim();
+
+                // Verifica se todas as informações do cartão foram preenchidas
+                if (numeroCartao === '' || nomeTitular === '' || dataValidade === '' || cvv === '') {
+                    alert("Por favor, preencha todas as informações do cartão de crédito.");
+                    return false; // Impede o envio do formulário
+                }
+            }
+
+
+            var metodoPagamento = document.querySelector('input[name="metodoPagamento"]:checked').value;
+
+        // Defina o valor do frete
+        var valorFrete = 0;
+        var freteSelecionado = document.querySelector('input[name="freteradio"]:checked');
+        if (freteSelecionado) {
+        valorFrete = parseFloat(freteSelecionado.value);
+        }
+
+            // Atualize os valores das inputs hidden
+            document.getElementById('valorFrete').value = valorFrete;
+            document.getElementById('formaPagamento').value = metodoPagamento;
+
+            // Se passou por todas as verificações, permite o envio do formulário
+            return true;
+        }
+
+
+        
+    </script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Get all radio buttons with name "freteradio"
+    var radioButtons = document.querySelectorAll('input[name="freteradio"]');
+    
+    // Function to update the freight value and total values
+    function updateValues(selectedValue) {
+        // Update the label with the selected freight value
+        document.getElementById("freteValue").innerText = 'R$ ' + selectedValue.toFixed(2);
+    
+        // Get the total value of products
+        var totalProduto = parseFloat([[${ session.carrinho.total }]]);
+    
+        // Calculate the new total values based on the selected freight value
+        var totalAPrazo = totalProduto + selectedValue;
+        var totalAVista = (totalProduto + selectedValue) * 0.95;
+    
+        // Update the labels with the calculated values
+        document.getElementById("totalAPrazo").innerText = 'R$ ' + totalAPrazo.toFixed(2);
+        document.getElementById("totalAVista").innerText = 'R$ ' + totalAVista.toFixed(2);
+    
+        document.getElementById("totalAVistaPedido").innerText = 'Valor total do pedido (Boleto): R$ ' + totalAVista.toFixed(2);
+    
+        // Update the value of freight in installments
+        var parcelas = document.getElementById('parcelas').querySelectorAll('option');
+        parcelas.forEach(function (option) {
+            var numParcelas = parseInt(option.value);
+            var valorParcela = (totalProduto + selectedValue) / numParcelas;
+            option.innerText = numParcelas + 'x R$ ' + valorParcela.toFixed(2);
+        });
+    }
+    
+    // Add change event listener to each radio button
+    radioButtons.forEach(function (radioButton) {
+        radioButton.addEventListener('change', function () {
+            // Get the selected value
+            var selectedValue = parseFloat(this.value);
+            updateValues(selectedValue);
+        });
+    });
+    
+    window.onload = function() {
+        // Find the selected radio button
+        var selectedRadioButton = document.querySelector('input[name="freteradio"]:checked');
+        if (selectedRadioButton) {
+            // Get the selected value
+            var selectedValue = parseFloat(selectedRadioButton.value);
+            updateValues(selectedValue);
+        }
+    }
+    /*]]>*/
+    </script>
+    
+</body>
+
+</html>
